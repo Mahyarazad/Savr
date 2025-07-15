@@ -10,9 +10,18 @@ using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+
 builder.Services.AddControllers();
-builder.Services
-                 .AddApplicationDependencies()
+builder.Services.AddApplicationDependencies()
                 .AddPersistenceDependencies(builder.Configuration)
                 .AddIdentityServices(builder.Configuration)
                 .AddSwagger()
@@ -43,32 +52,34 @@ builder.Services.AddCors(options =>
 });
 var app = builder.Build();
 
-//app.UseSession();
+app.UseSession();
 
 if(app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
     app.UseSwaggerDocumentation();
-    using(var scope = app.Services.CreateScope())
-    {
-        using (var context = scope.ServiceProvider.GetService<ApplicationDbContext>()) 
-        {
-            context!.Database.Migrate();
-            context!.Database.EnsureCreated();
-        }
-
-        using(var context = scope.ServiceProvider.GetService<UserDbContext>())
-        {
-            context!.Database.Migrate();
-            context!.Database.EnsureCreated();
-        }
-    }
+    
 }
 else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+//using (var scope = app.Services.CreateScope())
+//{
+//    using (var context = scope.ServiceProvider.GetService<ApplicationDbContext>())
+//    {
+//        context!.Database.Migrate();
+//        context!.Database.EnsureCreated();
+//    }
+
+//    using (var context = scope.ServiceProvider.GetService<UserDbContext>())
+//    {
+//        context!.Database.Migrate();
+//        context!.Database.EnsureCreated();
+//    }
+//}
 
 app.UseIdentity();
 app.UseHttpsRedirection();

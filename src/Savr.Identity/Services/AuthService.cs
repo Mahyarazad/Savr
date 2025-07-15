@@ -32,38 +32,32 @@ namespace Savr.Identity.Services
 
         public async Task<Result<LoginCommandResult>> Login(LoginCommand command, CancellationToken cancellationToken = default)
         {
-            var userByEmail = await _userManager.FindByEmailAsync(command.EmailOrUser);
-            var userByUsername = await _userManager.FindByNameAsync(command.EmailOrUser);
-            if(userByEmail == null && userByUsername == null)
+            var user = await _userManager.FindByEmailAsync(command.EmailOrUser);
+            
+            if(user == null)
             {
                 return Result.Fail("There is no registered username or Email.");
             }
 
 
 
-            if (userByEmail != null && userByEmail!.LockoutEnd != null)
+            if (user != null && user!.LockoutEnd != null)
             {
                 return Result.Fail("Your account has been locked due to multiple invalid requets.");
             }
 
-            if (userByUsername != null && userByUsername!.LockoutEnd != null)
-            {
-                return Result.Fail("Your account has been locked due to multiple invalid requets.");
-            }
-
-
-            var user = userByEmail != null ? userByEmail : userByUsername;
 
             var singInResult = await _signInManager.CheckPasswordSignInAsync(user!, command.Password, true);
+            var roles = await _userManager.GetRolesAsync(user); // move this earlier
 
-            if(singInResult.IsLockedOut)
+            if (singInResult.IsLockedOut)
             {
                 return Result.Fail("Account Locked, too many invalid login attempts.");
             }
 
             if(singInResult.Succeeded)
             {
-                var token = await GenerateJWTToken(user);
+                var token = await GenerateJWTToken(user, roles);
                 await _signInManager.SignInAsync(user, false);
                 //_httpContextAccessor.HttpContext.Session.SetString("UserName", user.Email.Split("@")[0]);
                 //_httpContextAccessor.HttpContext.Session.SetString("USer", System.Text.Json.JsonSerializer.Serialize(user));
@@ -76,22 +70,18 @@ namespace Savr.Identity.Services
 
         public async Task<Result<RegisterCommandResult>> Register(RegisterCommand command, CancellationToken cancellationToken = default)
         {
-            var existingUser = await _userManager.FindByNameAsync(command.UserName);
-            var existingEmail = await _userManager.FindByEmailAsync(command.Email);
+
+            var existingUser = await _userManager.FindByEmailAsync(command.Email);
             if (existingUser != null)
             {
                 return Result.Fail(new Error($"'{existingUser.UserName}' already exists."));
             }
 
-            if(existingEmail != null)
-            {
-                return Result.Fail(new Error($"'{existingEmail.Email}' already exists."));
-            }
 
             var user = new ApplicationUser()
             {
                 Email = command.Email,
-                UserName = command.UserName,
+                //UserName = command.UserName,
                 Firstname = command.FirstName,
                 Lastname = command.LastName,
                 EmailConfirmed = true,
@@ -118,21 +108,37 @@ namespace Savr.Identity.Services
 
         }
 
-        private async Task<JwtSecurityToken> GenerateJWTToken(ApplicationUser user)
+        private async Task<JwtSecurityToken> GenerateJWTToken(ApplicationUser user, IList<string> roles)
         {
-            var userClaims = await _userManager.GetClaimsAsync(user);
-            var role = await _userManager.GetRolesAsync(user);
+           // var userClaims = await _userManager.GetClaimsAsync(user);
+           // var role = await _userManager.GetRolesAsync(user);
 
-            var claims = new[]
+           // var claims = new[]
+           // {
+           //     new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+           //     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+           //     new Claim(JwtRegisteredClaimNames.Email, user.Email),
+           //     // I dont like the log ClaimType.GivenName in the token like this => http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata
+           //     new Claim("Uid", user.Id),
+           //     new Claim("Name", user.Firstname),
+           //     new Claim("Role", role[0]),
+           //}.Union(userClaims);
+
+            
+
+            var claims = new List<Claim>
+                {
+                    new Claim(JwtRegisteredClaimNames.Sub, user.UserName ?? ""),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
+                    new Claim("Uid", user.Id),
+                    new Claim("Name", user.Firstname ?? "")
+                };
+
+            if (roles.Count > 0)
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                // I dont like the log ClaimType.GivenName in the token like this => http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata
-                new Claim("Uid", user.Id),
-                new Claim("Name", user.Firstname),
-                new Claim("Role", role[0]),
-           }.Union(userClaims);
+                claims.Add(new Claim("Role", roles[0])); // Only include if you're using roles
+            }
 
             // Uses the same secret key for both encryption and decryption.
             // This key can be a password, code, or a random string of letters or numbers.
