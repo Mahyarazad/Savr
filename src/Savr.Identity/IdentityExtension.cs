@@ -25,8 +25,10 @@ namespace Savr.Identity
             services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
 
             IdentityBuilder builder = services.AddIdentityCore<ApplicationUser>()
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<UserDbContext>()
                 .AddSignInManager<SignInManager<ApplicationUser>>()
+                .AddRoleManager<RoleManager<IdentityRole>>()
                 .AddDefaultTokenProviders();
 
 

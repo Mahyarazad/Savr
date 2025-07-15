@@ -40,7 +40,13 @@ namespace Savr.Identity.Services
             }
 
 
-            if(userByUsername!.LockoutEnd != null)
+
+            if (userByEmail != null && userByEmail!.LockoutEnd != null)
+            {
+                return Result.Fail("Your account has been locked due to multiple invalid requets.");
+            }
+
+            if (userByUsername != null && userByUsername!.LockoutEnd != null)
             {
                 return Result.Fail("Your account has been locked due to multiple invalid requets.");
             }
@@ -115,6 +121,7 @@ namespace Savr.Identity.Services
         private async Task<JwtSecurityToken> GenerateJWTToken(ApplicationUser user)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
+            var role = await _userManager.GetRolesAsync(user);
 
             var claims = new[]
             {
@@ -124,7 +131,7 @@ namespace Savr.Identity.Services
                 // I dont like the log ClaimType.GivenName in the token like this => http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata
                 new Claim("Uid", user.Id),
                 new Claim("Name", user.Firstname),
-                new Claim("Role", "User"),
+                new Claim("Role", role[0]),
            }.Union(userClaims);
 
             // Uses the same secret key for both encryption and decryption.
