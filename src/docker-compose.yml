@@ -1,0 +1,35 @@
+version: '3.4'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    environment:
+      POSTGRES_DB: Savr
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - savr_network
+
+  savr.api:
+    image: ${DOCKER_REGISTRY-}savrapi
+    build:
+      context: .
+      dockerfile: Savr.API/Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=Savr;Username=postgres;Password=admin"
+    networks:
+      - savr_network
+
+networks:
+  savr_network:
+
+volumes:
+  postgres_data:
