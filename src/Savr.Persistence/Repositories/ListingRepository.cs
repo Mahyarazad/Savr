@@ -5,48 +5,25 @@ using Savr.Domain.Abstractions.Persistence.Repositories;
 using Savr.Domain.Entities;
 
 using Savr.Persistence.Data;
+using System.Text.RegularExpressions;
 
 namespace Savr.Persistence.Repositories
 {
-    public class ListingRepository(ApplicationDbContext context, IDapperService dapper) : IListingRepository
+    public class ListingRepository : Repository<Listing>, IListingRepository
     {
-        private readonly ApplicationDbContext _context = context;
-        private readonly IDapperService _dapper = dapper;
+        private readonly ApplicationDbContext _context;
+        private readonly IDapperService _dapper;
 
-        public async Task AddAsync(Listing value, CancellationToken cancellationToken = default)
+        public ListingRepository(ApplicationDbContext context, IDapperService dapper) : base (context)
         {
-            await _context.Set<Listing>().AddAsync(value, cancellationToken);
+            _context = context;
+            _dapper = dapper;
         }
 
-        public async Task<Listing?> GetByIdAsync(long listingId, CancellationToken cancellationToken = default)
+        public async Task<bool> DoesUserOwnThisListingAsync(long listingId, Guid userId, CancellationToken cancellationToken = default)
         {
             return await _context.Set<Listing>()
-                .FirstOrDefaultAsync(p => p.Id == listingId, cancellationToken);
-        }
-
-        public async Task<int> DeleteAsync(long listingId, CancellationToken cancellationToken = default)
-        {
-            return await _context.Set<Listing>()
-                .Where(p => p.Id == listingId)
-                .ExecuteDeleteAsync(cancellationToken);
-        }
-
-        public Task UpdateAsync(Listing value, CancellationToken cancellationToken = default)
-        {
-            _context.Set<Listing>().Update(value);
-            return Task.CompletedTask;
-        }
-
-        public Task<bool> DoesUserOwnThisListingAsync(long listingId, Guid userId, CancellationToken cancellationToken = default)
-        {
-            return _context.Set<Listing>()
-                .AnyAsync(p => p.Id == listingId && p.UserId == userId, cancellationToken);
-        }
-
-        public Task<bool> AnyAsync(long listingId, CancellationToken cancellationToken = default)
-        {
-            return _context.Set<Listing>()
-                .AnyAsync(x => x.Id == listingId, cancellationToken);
+                .AnyAsync(x => x.Id == listingId && x.UserId == userId, cancellationToken);
         }
 
         public async Task<IEnumerable<Listing>> GetListingListAsync(
@@ -65,6 +42,48 @@ namespace Savr.Persistence.Repositories
                 "GetFilteredDataWithPagination",
                 parameters,
                 commandType: System.Data.CommandType.StoredProcedure);
+        }
+
+        public async Task<int> Activate(long groupId, CancellationToken cancellationToken = default)
+        {
+            var listing = await _context.Set<Listing>().FirstOrDefaultAsync(x => x.Id == groupId, cancellationToken);
+            if (listing == null)
+            {
+                return 0;
+            }
+
+            var result = listing.Activate();
+
+            if (result.IsSuccess)
+            {
+                _context.Set<Listing>().Update(listing);
+                return await _context.SaveChangesAsync(cancellationToken);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public async Task<int> DeActivate(long groupId, CancellationToken cancellationToken = default)
+        {
+            var listing = await _context.Set<Listing>().FirstOrDefaultAsync(x => x.Id == groupId, cancellationToken);
+            if (listing == null)
+            {
+                return 0;
+            }
+
+            var result = listing.Deactivate();
+
+            if (result.IsSuccess)
+            {
+                _context.Set<Listing>().Update(listing);
+                return await _context.SaveChangesAsync(cancellationToken);
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 }

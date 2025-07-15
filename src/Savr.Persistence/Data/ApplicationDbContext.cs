@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Savr.Domain.Entities;
-using System;
-using System.Reflection;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 namespace Savr.Persistence.Data
 {
@@ -18,7 +17,9 @@ namespace Savr.Persistence.Data
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
+
         {
+
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         }
     }

@@ -1,7 +1,8 @@
 ﻿using FluentResults;
-using Savr.Domain.Entities;
 using Savr.Domain.Primitives;
 
+
+namespace Savr.Domain.Entities;
 public class Group : BaseEntity<long>
 {
     protected Group() { }
@@ -50,6 +51,39 @@ public class Group : BaseEntity<long>
             return Result.Fail("Listing not found in group.");
 
         _listings.Remove(listing);
+        return Result.Ok(this);
+    }
+
+
+    public Result<Group> Update(string title, string description)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            return Result.Fail("Title cannot be empty.");
+
+        if (string.IsNullOrWhiteSpace(description))
+            return Result.Fail("Description cannot be empty.");
+
+        Title = title;
+        Description = description;
+
+        return Result.Ok(this);
+    }
+
+    public Result<Group> Activate()
+    {
+        if (IsActive)
+            return Result.Fail("Group is already active.");
+
+        IsActive = true;
+        return Result.Ok(this);
+    }
+
+    public Result<Group> Deactivate()
+    {
+        if (!IsActive)
+            return Result.Fail("Group is already inactive.");
+
+        IsActive = false;
         return Result.Ok(this);
     }
 }

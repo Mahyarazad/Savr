@@ -4,7 +4,7 @@ using Savr.Application.DTOs;
 
 namespace Savr.Application.Features.Products.Commands.CreateProduct
 {
-    public record CreateProductCommand(
+    public record struct CreateProductCommand(
         string Name,
         string ManufactureEmail,
         string? ManufacturePhone,

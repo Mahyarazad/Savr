@@ -11,8 +11,4 @@ namespace Savr.Persistence.Profiles
             CreateMap<ListingDTO, Listing>();
         }
     }
-
-    internal interface IProfile
-    {
-    }
 }

@@ -11,7 +11,8 @@ using Microsoft.Data.SqlClient;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddApplicationDependencies()
+builder.Services
+                 .AddApplicationDependencies()
                 .AddPersistenceDependencies(builder.Configuration)
                 .AddIdentityServices(builder.Configuration)
                 .AddSwagger()

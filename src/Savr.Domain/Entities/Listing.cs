@@ -8,13 +8,14 @@ namespace Savr.Domain.Entities
         protected Listing() { }
 
         public string Name { get; private set; } = default!;
-        public DateTime ProductDate { get; private set; }
+        public DateTime CreationDate { get; private set; }
+        public DateTime UpdateDate { get; private set; }
         public string ManufactureEmail { get; private set; } = default!;
         public string? ManufacturePhone { get; private set; }
         public bool IsAvailable { get; private set; }
         public Guid UserId { get; private set; }
 
-        public float[]? Embedding { get; private set; }
+        //public float[]? Embedding { get; private set; }
         public long GroupId { get; private set; }
         public Group? Group { get; private set; }
 
@@ -23,7 +24,8 @@ namespace Savr.Domain.Entities
             Name = name;
             ManufactureEmail = manufactureEmail;
             ManufacturePhone = manufacturePhone;
-            ProductDate = DateTime.UtcNow;
+            CreationDate = DateTime.UtcNow;
+            
             IsAvailable = true;
             UserId = userId;
             GroupId = groupId;
@@ -52,12 +54,24 @@ namespace Savr.Domain.Entities
             Name = name;
             ManufactureEmail = manufactureEmail;
             ManufacturePhone = manufacturePhone;
-
+            UpdateDate = DateTime.UtcNow;
             return Result.Ok(this);
         }
 
-        public Result<Listing> SoftDelete()
+        public Result<Listing> Activate()
         {
+            if (IsAvailable)
+                return Result.Fail("Listing is already active.");
+
+            IsAvailable = true;
+            return Result.Ok(this);
+        }
+
+        public Result<Listing> Deactivate()
+        {
+            if (!IsAvailable)
+                return Result.Fail("Listing is already inactive.");
+
             IsAvailable = false;
             return Result.Ok(this);
         }

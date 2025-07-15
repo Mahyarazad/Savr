@@ -4,7 +4,7 @@ using Savr.Application.Abstractions.Messaging;
 
 namespace Savr.Application.Features.Identity.Commands.Register
 {
-    public record RegisterCommand(string FirstName, string LastName, string Email, string UserName, string Password) 
+    public record struct RegisterCommand(string FirstName, string LastName, string Email, string UserName, string Password, string Role) 
         : ICommand<Result<RegisterCommandResult>>;
 
 }

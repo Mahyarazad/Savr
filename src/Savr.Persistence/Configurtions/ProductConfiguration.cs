@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Pgvector;
 using Savr.Domain.Entities;
+
 
 namespace Savr.Persistence.Configurtions
 {
@@ -14,7 +16,7 @@ namespace Savr.Persistence.Configurtions
             builder.HasKey(p => p.Id);
 
             builder.Property(p => p.Name)
-                .HasMaxLength(128)
+                .HasMaxLength(500)
                 .IsRequired();
 
             builder.Property(p => p.ManufactureEmail)
@@ -24,21 +26,24 @@ namespace Savr.Persistence.Configurtions
             builder.Property(p => p.ManufacturePhone)
                 .HasMaxLength(128);
 
-            builder.Property(p => p.ProductDate)
+            builder.Property(p => p.CreationDate)
                 .IsRequired();
 
             builder.Property(p => p.IsAvailable)
                 .HasDefaultValue(true);
 
-            builder.HasIndex(p => new { p.ManufactureEmail, p.ProductDate }, "UniqueIndex_MEmail_PDate")
+            builder.HasIndex(p => new { p.ManufactureEmail, p.CreationDate }, "UniqueIndex_MEmail_PDate")
                 .IsUnique(true);
 
             builder.HasQueryFilter(p => p.IsAvailable);
 
             // ✅ Vector field for PostgreSQL (pgvector)
-            builder.Property<float[]>("Embedding")
-                .HasColumnType("vector(1536)") // use correct dimensions (e.g., OpenAI = 1536)
-                .HasColumnName("embedding");
+            //builder.Property(e => e.Embedding)
+            //  .HasColumnType("vector(1536)")
+            //  .HasConversion(
+            //      v => new Vector(v),        // float[] → Vector
+            //      v => v.ToArray()           // Vector → float[]
+            //  );
         }
     }
 

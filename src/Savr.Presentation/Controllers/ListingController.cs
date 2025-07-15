@@ -16,22 +16,22 @@ namespace Savr.Presentation.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/v1/products")]
-    public class ProductController : ControllerBase
+    [Route("api/v1/listing")]
+    public class ListingController : ControllerBase
     {
         private readonly ISender _sender;
         private readonly IHttpContextAccessor _httpContextAccessor;
         //private readonly IDistributedCache _distributedCache;
         //private readonly IDataProtectionProvider _dataProtectionProvider;
 
-        public ProductController(IHttpContextAccessor httpContextAccessor, ISender sender)
+        public ListingController(IHttpContextAccessor httpContextAccessor, ISender sender)
         {
             _sender = sender;
             _httpContextAccessor = httpContextAccessor;
         }
 
 
-        [HttpPost("add")]
+        [HttpPost("create")]
         public async Task<IActionResult> AddProduct(CreateProductCommand command, CancellationToken cancellationToken)
         {
             var result = await _sender.Send(command, cancellationToken);
@@ -56,7 +56,7 @@ namespace Savr.Presentation.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("get-product-list")]
+        [HttpGet("get-listing")]
         public async Task<IActionResult> GetProductList(
             [FromQuery, Required] int pageNumber,
             [FromQuery, Required] int pageSize,
@@ -85,7 +85,7 @@ namespace Savr.Presentation.Controllers
             });
         }
 
-        [HttpDelete("hard-delete")]
+        [HttpDelete("soft-delete")]
         public async Task<IActionResult> DeleteProduct(DeleteProductCommand command, CancellationToken cancellationToken)
         {
             var result =  await _sender.Send(command, cancellationToken);

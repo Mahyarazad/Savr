@@ -17,11 +17,17 @@ namespace Savr.Application
         public static IServiceCollection AddApplicationDependencies(this IServiceCollection services)
         {
             services.AddScoped<IValidator<CreateProductCommand>,CreateProductCommandValidator>();
+
             services.AddScoped<IValidator<UpdateProductCommand>,UpdateProductCommandValidator>();
+
             services.AddScoped<IValidator<LoginCommand>,LoginCommandValidator>();
+
             services.AddScoped<IValidator<RegisterCommand>, RegsiterCommandValidator>();
+
             services.AddScoped<IValidator<DeleteProductCommand>, DeleteProductCommandValidator>();
+
             services.AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
             return services;
         }
     }

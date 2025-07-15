@@ -4,7 +4,7 @@ using Savr.Application.DTOs;
 
 namespace Savr.Application.Features.Products.Commands.UpdateProduct
 {
-    public record UpdateProductCommand(
+    public record struct UpdateProductCommand(
         long Id,
         string Name,
         string ManufactureEmail,

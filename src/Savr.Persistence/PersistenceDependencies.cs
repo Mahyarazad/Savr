@@ -9,6 +9,7 @@ using Savr.Persistence.Data;
 using Savr.Persistence.Profiles;
 using Savr.Persistence.Repositories;
 using System.Reflection;
+using Npgsql;
 
 namespace Savr.Persistence 
 {
@@ -19,13 +20,16 @@ namespace Savr.Persistence
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseNpgsql(configuration.GetConnectionString("Postgres"));
+                
             });
 
             services.AddAutoMapper(Assembly.GetAssembly(typeof(IProfile)));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            
             services.AddScoped<IListingRepository, ListingRepository>();
+            services.AddScoped<IGroupRepository, GroupRepository>();
 
             services.AddSingleton<IDapperService, DapperService>();
 

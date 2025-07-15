@@ -94,7 +94,18 @@ namespace Savr.Identity.Services
 
             if(identityResult.Succeeded)
             {
+                var role = string.IsNullOrWhiteSpace(command.Role) ? "User" : command.Role;
+
+                var roleResult = await _userManager.AddToRoleAsync(user, role);
+
+                if (!roleResult.Succeeded)
+                {
+                    return Result.Fail(roleResult.Errors.Select(e => e.Description).ToArray());
+                }
+
                 return Result.Ok(new RegisterCommandResult(user.Id));
+                
+
             }
 
             return Result.Fail(identityResult.Errors.Select(x=> x.Description).ToArray());
