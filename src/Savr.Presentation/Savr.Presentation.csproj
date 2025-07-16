@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Savr.Application\Savr.Application.csproj" />
+    <ProjectReference Include="..\Savr.Identity\Savr.Identity.csproj" />
   </ItemGroup>
 
 </Project>

@@ -16,7 +16,7 @@ using System.Net;
 namespace Savr.Presentation.Controllers
 {
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Admin,Merchant")]
     [Route("api/v1/listing")]
     public class ListingController : ControllerBase
     {

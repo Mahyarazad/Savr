@@ -14,6 +14,8 @@ using Serilog.Core;
 var builder = WebApplication.CreateBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.Console()
     .WriteTo.PostgreSQL(
         connectionString: builder.Configuration.GetConnectionString("postgres"),
         tableName: "logs",
@@ -75,8 +77,9 @@ builder.Services.AddCors(options =>
 });
 var app = builder.Build();
 
-
+app.UseRouting();
 app.UseSession();
+
 
 if(app.Environment.IsDevelopment())
 {
@@ -114,9 +117,18 @@ using (var scope = app.Services.CreateScope())
 app.UseIdentity();
 app.UseHttpsRedirection();
 app.UseSwaggerDocumentation();
-app.UseCors("default");
+//app.UseCors(policy => policy
+//    .WithOrigins("https://localhost:5173") // your frontend origin
+//    .AllowAnyHeader()
+//    .AllowAnyMethod()
+//    .AllowCredentials()); // required for cookies/session-based auth
+
+app.UseCors();
 
 app.MapControllers();
+//app.UseEndpoints(endpoints => {
+//    endpoints.MapControllers();
+//});
 
 app.Use(async (context, next) =>
 {

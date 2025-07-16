@@ -10,6 +10,10 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Savr.Application.Abstractions.Identity;
 using Savr.Identity.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Savr.Identity
 {
@@ -34,37 +38,47 @@ namespace Savr.Identity
 
             services.AddAuthentication(options =>
             {
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(options =>
-            {
-                options.SaveToken = true;
-                options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidAudience = configuration["JwtSettings:Audience"],
-                    ValidIssuer = configuration["JwtSettings:Issuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Secret"]))
-                };
-            })
-            .AddCookie(IdentityConstants.ApplicationScheme, options =>
-            {
-                options.LoginPath = "/Account/Login";
-                options.AccessDeniedPath = "/Account/AccessDenied";
-            })
-            .AddGoogle("Google", options =>
-            {
-                options.ClientId = configuration["Authentication:Google:ClientId"];
-                options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
-                options.CallbackPath = "/signin-google"; // default
-            });
+
+          .AddCookie(IdentityConstants.ApplicationScheme)
 
 
+           .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+           {
+               options.SaveToken = true;
+               options.RequireHttpsMetadata = false;
+               options.TokenValidationParameters = new TokenValidationParameters
+               {
+                   RoleClaimType = ClaimTypes.Role,
+                   ValidateIssuer = true,
+                   ValidateAudience = true,
+                   ValidateLifetime = true,
+                   ValidateIssuerSigningKey = true,
+                   ValidAudience = configuration["JwtSettings:Audience"],
+                   ValidIssuer = configuration["JwtSettings:Issuer"],
+                   IssuerSigningKey = new SymmetricSecurityKey(
+                       Encoding.UTF8.GetBytes(configuration["JwtSettings:Secret"]))
+               };
+           })
+           .AddGoogle("Google", options =>
+           {
+               options.ClientId = configuration["Authentication:Google:ClientId"];
+               options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+               options.CallbackPath = "/signin-google";
 
+               options.Events.OnRemoteFailure = context =>
+               {
+                   var error = Uri.EscapeDataString(context.Failure?.Message ?? "Unknown");
+                   context.Response.Redirect($"/auth/login-failed?error={error}");
+                   context.HandleResponse();
+                   return Task.CompletedTask;
+               };
+           });
+
+            services.AddAuthorization();
 
             services.AddScoped<IAuthService, AuthService>();
 

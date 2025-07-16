@@ -50,7 +50,7 @@ namespace Savr.Application.Features.Products.Commands.DeleteProduct
                 return Result.Fail(HttpStatusCode.Forbidden.ToString());
             }
 
-            var deleted = await _productRepository.DeleteAsync(request.Id, cancellationToken);
+            await _productRepository.DeleteAsync(request.Id, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Result.Ok();

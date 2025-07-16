@@ -31,14 +31,14 @@ namespace Savr.Persistence.Repositories
             return Task.CompletedTask;
         }
 
-        public virtual async Task<int> DeleteAsync(long id, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteAsync(long id, CancellationToken cancellationToken = default)
         {
             var entity = await GetByIdAsync(id, cancellationToken);
             if (entity is null)
-                return 0;
+                return;
 
             _dbSet.Remove(entity);
-            return await _context.SaveChangesAsync(cancellationToken);
+            
         }
 
         public virtual async Task<bool> AnyAsync(long id, CancellationToken cancellationToken = default)

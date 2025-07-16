@@ -77,15 +77,18 @@ namespace Savr.Identity.Services
                 return Result.Fail(new Error($"'{existingUser.UserName}' already exists."));
             }
 
+            var email = command.Email?.Trim().ToLower();
+            var username = email?.Split('@')[0];
 
             var user = new ApplicationUser()
             {
-                Email = command.Email,
-                //UserName = command.UserName,
-                Firstname = command.FirstName,
-                Lastname = command.LastName,
+                Email = email,
+                UserName = username,
+                Firstname = command.FirstName?.Trim(),
+                Lastname = command.LastName?.Trim(),
                 EmailConfirmed = true,
             };
+
             var identityResult = await _userManager.CreateAsync(user, command.Password);
 
             if(identityResult.Succeeded)
@@ -137,7 +140,7 @@ namespace Savr.Identity.Services
 
             if (roles.Count > 0)
             {
-                claims.Add(new Claim("Role", roles[0])); // Only include if you're using roles
+                claims.Add(new Claim(ClaimTypes.Role, roles[0]));
             }
 
             // Uses the same secret key for both encryption and decryption.

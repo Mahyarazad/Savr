@@ -45,16 +45,19 @@ namespace Savr.Presentation.Configuration
                 config.AddSecurityRequirement(new OpenApiSecurityRequirement()
                 {
                     {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
+                            new OpenApiSecurityScheme
                             {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                },
+                                Scheme = "Bearer",
+                                Name = "Bearer",
+                                In = ParameterLocation.Header
+                            },
+                            Array.Empty<string>()
                         },
-                        new string[] {}
-                    },
                     {
                         new OpenApiSecurityScheme
                         {

@@ -10,7 +10,7 @@ namespace Savr.Domain.Abstractions.Persistence.Repositories
 
         Task UpdateAsync(T entity, CancellationToken cancellationToken = default);
 
-        Task<int> DeleteAsync(long id, CancellationToken cancellationToken = default);
+        Task DeleteAsync(long id, CancellationToken cancellationToken = default);
 
         Task<bool> AnyAsync(long id, CancellationToken cancellationToken = default);
 
