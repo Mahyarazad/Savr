@@ -73,66 +73,7 @@ namespace Savr.Presentation.Controllers
             }
         }
 
-        [HttpGet("signin-google")]
-        public IActionResult GoogleLogin(string? returnUrl = "/")
-        {
-            var redirectUrl = Url.Action("ExternalLoginCallback", "Auth", new { returnUrl });
-            var props = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
-            return Challenge(props, "Google");
-        }
-
-        [HttpGet("external-login-callback")]
-        public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = "/success")
-        {
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
-                return Redirect("/error");
-
-            var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-
-            if (user == null)
-            {
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-                user = new ApplicationUser
-                {
-                    UserName = email,
-                    Email = email,
-                };
-                var result = await _userManager.CreateAsync(user);
-                if (!result.Succeeded)
-                    return Redirect("/error");
-
-                var loginResult = await _userManager.AddLoginAsync(user, info);
-                if (!loginResult.Succeeded)
-                    return Redirect("/error");
-            }
-
-            await _signInManager.SignInAsync(user, isPersistent: false);
-
-
-            return Ok();
-            //var token = await GenerateJWTToken(user, await _userManager.GetRolesAsync(user));
-
-            //return Ok(new
-            //{
-            //    user.Id,
-            //    user.Email,
-            //    token = new JwtSecurityTokenHandler().WriteToken(token)
-            //});
-        }
-
-
-        [HttpGet("login-failed")]
-        public IActionResult LoginFailed([FromQuery] string? error = "Unknown error")
-        {
-            Log.Warning("Google login failed: {Error}", error);
-
-            return BadRequest(new
-            {
-                message = "Google sign-in failed",
-                error = error
-            });
-        }
+       
 
 
     }

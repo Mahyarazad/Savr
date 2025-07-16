@@ -41,10 +41,12 @@ namespace Savr.Identity
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+                // for external login
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-
-          .AddCookie(IdentityConstants.ApplicationScheme)
-
+           .AddCookie(IdentityConstants.ApplicationScheme)
+           .AddCookie()
 
            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
            {
@@ -68,6 +70,7 @@ namespace Savr.Identity
                options.ClientId = configuration["Authentication:Google:ClientId"];
                options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
                options.CallbackPath = "/signin-google";
+               options.SaveTokens = true;
 
                options.Events.OnRemoteFailure = context =>
                {
@@ -81,6 +84,10 @@ namespace Savr.Identity
             services.AddAuthorization();
 
             services.AddScoped<IAuthService, AuthService>();
+
+            //services.AddScoped<IJwtAuthService, JwtAuthService>();
+
+
 
             return services;
         }

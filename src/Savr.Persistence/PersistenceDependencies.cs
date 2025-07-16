@@ -33,6 +33,7 @@ namespace Savr.Persistence
 
             
             services.AddScoped<IListingRepository, ListingRepository>();
+
             services.AddScoped<IGroupRepository, GroupRepository>();
 
             services.AddSingleton<IDapperService, DapperService>();
