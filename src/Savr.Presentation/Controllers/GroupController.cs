@@ -33,9 +33,9 @@ namespace Savr.Presentation.Controllers
         }
 
         [HttpGet("get-all")]
-        public async Task<IActionResult> GetAllGroups(GetAllGroupsQuery query, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAllGroups(CancellationToken cancellationToken)
         {
-            var result = await _sender.Send(query, cancellationToken);
+            var result = await _sender.Send(new GetAllGroupsQuery(), cancellationToken);
             return Ok(result.Value);
         }
 
