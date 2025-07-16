@@ -24,9 +24,29 @@ services:
     depends_on:
       - postgres
     environment:
-      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=Savr;Username=postgres;Password=admin"
+      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=Savr;Username=postgres-d;Password=admin"
+    
     networks:
       - savr_network
+  migrator:
+    build:
+      context: .
+      dockerfile: Savr.API/Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=Savr;Username=postgres-d;Password=admin"
+    entrypoint: >
+      sh -c "
+        echo 'Waiting for Postgres...';
+        until pg_isready -h postgres -p 5432; do sleep 1; done;
+        echo 'Running migrations...';
+
+        dotnet tool install --global dotnet-ef;
+        export PATH=\"$PATH:/root/.dotnet/tools\";
+
+        dotnet ef database update --project Savr.Persistence --startup-project Savr.API;
+        dotnet ef database update --project Savr.Identity --startup-project Savr.API;"
 
 networks:
   savr_network:

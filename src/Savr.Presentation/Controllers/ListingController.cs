@@ -9,6 +9,7 @@ using Savr.Application.Features.Products.Commands.DeleteProduct;
 using Savr.Application.Features.Products.Commands.UpdateProduct;
 using Savr.Application.Features.Products.Queries;
 using Savr.Presentation.Helpers;
+using Serilog;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 
@@ -34,13 +35,10 @@ namespace Savr.Presentation.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> AddProduct(CreateProductCommand command, CancellationToken cancellationToken)
         {
-            var result = await _sender.Send(command, cancellationToken);
-            if(result.IsSuccess)
-            {
-                return Created("/", result.Value);
-            }
-
-            return BadRequest(ResultErrorParser.ParseResultError(result.Errors));
+            return await ControllerActionExecutor.SafeExecute(
+                () => _sender.Send(command, cancellationToken),
+                result => Created("/", result)
+            );
         }
 
         [HttpPut("update")]

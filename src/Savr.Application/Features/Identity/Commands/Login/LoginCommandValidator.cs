@@ -6,7 +6,7 @@ namespace Savr.Application.Features.Identity.Commands.Login
     {
         public LoginCommandValidator()
         {
-            RuleFor(x => x.EmailOrUser).NotEmpty().WithMessage("User or Email is required");
+            RuleFor(x => x.Email).NotEmpty().WithMessage("User or Email is required");
         }
     }
 }

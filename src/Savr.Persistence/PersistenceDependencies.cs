@@ -20,7 +20,11 @@ namespace Savr.Persistence
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseNpgsql(configuration.GetConnectionString("Postgres"));
-                
+            });
+
+            services.AddDbContext<LogDbContext>(options =>
+            {
+                options.UseNpgsql(configuration.GetConnectionString("Postgres"));
             });
 
             services.AddAutoMapper(Assembly.GetAssembly(typeof(IProfile)));

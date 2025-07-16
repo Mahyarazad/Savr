@@ -32,7 +32,7 @@ namespace Savr.Identity.Services
 
         public async Task<Result<LoginCommandResult>> Login(LoginCommand command, CancellationToken cancellationToken = default)
         {
-            var user = await _userManager.FindByEmailAsync(command.EmailOrUser);
+            var user = await _userManager.FindByEmailAsync(command.Email);
             
             if(user == null)
             {

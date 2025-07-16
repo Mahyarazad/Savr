@@ -1,14 +1,37 @@
-using Microsoft.EntityFrameworkCore;
 using Savr.Application;
 using Savr.Persistence;
-using Savr.Persistence.Data;
 using Savr.Identity;
-using Savr.Identity.Data;
 using Savr.Presentation.Configuration;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Data.SqlClient;
+using Serilog;
+using Savr.Persistence.Data;
+using Savr.Identity.Data;
+using Microsoft.EntityFrameworkCore;
+using Serilog.Sinks.PostgreSQL;
+using Serilog.Core;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.PostgreSQL(
+        connectionString: builder.Configuration.GetConnectionString("postgres"),
+        tableName: "logs",
+        needAutoCreateTable: true,
+        columnOptions: new Dictionary<string, ColumnWriterBase>
+        {
+            { "message", new RenderedMessageColumnWriter() },
+            { "message_template", new MessageTemplateColumnWriter() },
+            { "level", new LevelColumnWriter() },
+            { "timestamp", new TimestampColumnWriter() },
+            { "exception", new ExceptionColumnWriter() },
+            { "properties", new PropertiesColumnWriter() },
+            { "log_event", new LogEventSerializedColumnWriter() }
+        })
+    .CreateLogger();
+
+
+builder.Host.UseSerilog();
 
 builder.Services.AddDistributedMemoryCache();
 
@@ -52,6 +75,7 @@ builder.Services.AddCors(options =>
 });
 var app = builder.Build();
 
+
 app.UseSession();
 
 if(app.Environment.IsDevelopment())
@@ -66,20 +90,26 @@ else
     app.UseHsts();
 }
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    using (var context = scope.ServiceProvider.GetService<ApplicationDbContext>())
-//    {
-//        context!.Database.Migrate();
-//        context!.Database.EnsureCreated();
-//    }
+using (var scope = app.Services.CreateScope())
+{
+    using (var context = scope.ServiceProvider.GetService<ApplicationDbContext>())
+    {
+        context!.Database.Migrate();
+        context!.Database.EnsureCreated();
+    }
 
-//    using (var context = scope.ServiceProvider.GetService<UserDbContext>())
-//    {
-//        context!.Database.Migrate();
-//        context!.Database.EnsureCreated();
-//    }
-//}
+    using (var context = scope.ServiceProvider.GetService<UserDbContext>())
+    {
+        context!.Database.Migrate();
+        context!.Database.EnsureCreated();
+    }
+
+    //using (var context = scope.ServiceProvider.GetService<LogDbContext>())
+    //{
+    //    context!.Database.Migrate();
+    //    context!.Database.EnsureCreated();
+    //}
+}
 
 app.UseIdentity();
 app.UseHttpsRedirection();
@@ -94,8 +124,24 @@ app.Use(async (context, next) =>
     await next(context);
 
     // Log response details
-    Console.WriteLine($"Response: {context.Response.StatusCode}");
+    Log.Information($"Response: {context.Response.StatusCode}");
 });
 
-app.Run();
+
+try
+{
+    Log.Information("Starting app {Time}", DateTime.UtcNow);
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "App crashed.");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
+
+
+
 
