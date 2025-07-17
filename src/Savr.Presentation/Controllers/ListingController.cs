@@ -1,15 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
-using Savr.Application.Features.Products.Commands.CreateProduct;
-using Savr.Application.Features.Products.Commands.DeleteProduct;
+using Savr.Application.Features.Listings.Commands;
 using Savr.Application.Features.Products.Commands.UpdateProduct;
 using Savr.Application.Features.Products.Queries;
 using Savr.Presentation.Helpers;
-using Serilog;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 
@@ -33,7 +29,7 @@ namespace Savr.Presentation.Controllers
 
 
         [HttpPost("create")]
-        public async Task<IActionResult> AddProduct(CreateProductCommand command, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddProduct(CreateListingCommand command, CancellationToken cancellationToken)
         {
             return await ControllerActionExecutor.SafeExecute(
                 () => _sender.Send(command, cancellationToken),
@@ -42,12 +38,12 @@ namespace Savr.Presentation.Controllers
         }
 
         [HttpPut("update")]
-        public async Task<IActionResult> UpdateProduct(UpdateProductCommand command, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateProduct(UpdateListingCommand command, CancellationToken cancellationToken)
         {
             var result = await _sender.Send(command, cancellationToken);
             if(result.IsSuccess)
             {
-                return Ok(result.Value);
+                return Ok();
             }
 
             return BadRequest(ResultErrorParser.ParseResultError(result.Errors));
@@ -75,7 +71,7 @@ namespace Savr.Presentation.Controllers
                 // sessionData will contain the data stored in Redis for the session
             }
 
-            var result = await _sender.Send(new GetProductListQuery(pageNumber, pageSize, nameFilter, manufactureEmailFilter, phoneFilter), cancellationToken);
+            var result = await _sender.Send(new GetListingListQuery(pageNumber, pageSize, nameFilter, manufactureEmailFilter, phoneFilter), cancellationToken);
             return Ok(new 
             { 
                 TotalCount = result.Count(), 
@@ -84,7 +80,7 @@ namespace Savr.Presentation.Controllers
         }
 
         [HttpDelete("soft-delete")]
-        public async Task<IActionResult> DeleteProduct(DeleteProductCommand command, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteProduct(DeleteListingCommand command, CancellationToken cancellationToken)
         {
             var result =  await _sender.Send(command, cancellationToken);
             if(result.IsSuccess)

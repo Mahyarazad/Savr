@@ -1,11 +1,12 @@
-﻿using Savr.Application.Features.Products.Commands.CreateProduct;
+﻿using Savr.Application.Features.Listings.Commands;
+
 using System.Text.Json.Serialization;
 
 namespace Savr.Presentation.Configuration.SerializerOptions
 {
-    [JsonSerializable(typeof(CreateProductCommand))]
-    [JsonSerializable(typeof(CreateProductResponse))]
-    public partial class ProductSettings : JsonSerializerContext
+    [JsonSerializable(typeof(CreateListingCommand))]
+    [JsonSerializable(typeof(CreateListingResponse))]
+    public partial class ListingSettings : JsonSerializerContext
     {
     }
 }

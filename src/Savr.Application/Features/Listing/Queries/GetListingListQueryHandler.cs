@@ -7,18 +7,18 @@ using System.Linq;
 
 namespace Savr.Application.Features.Products.Queries
 {
-    public class GetProductListQueryHandler : IListQueryHandler<GetProductListQuery, IEnumerable<ListingDTO>>
+    public class GetListingListQueryHandler : IListQueryHandler<GetListingListQuery, IEnumerable<ListingDTO>>
     {
         private readonly IListingRepository _productRepository;
         private readonly IMapper _mapper;
 
-        public GetProductListQueryHandler(IListingRepository productRepository, IMapper mapper)
+        public GetListingListQueryHandler(IListingRepository productRepository, IMapper mapper)
         {
             _productRepository = productRepository;
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ListingDTO>> Handle(GetProductListQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ListingDTO>> Handle(GetListingListQuery request, CancellationToken cancellationToken)
         {
             var repoResult = await _productRepository.GetListingListAsync(request.pageNumber, request.pageSize,
                 request.NameFilter, request.ManufactureEmailFilter, request.PhoneFilter);

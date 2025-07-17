@@ -1,12 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Text.Json.Serialization;
-namespace Savr.Application.Features.Products.Commands.CreateProduct
+namespace Savr.Application.Features.Listings.Commands
 {
-    public record struct CreateProductResponse
+    public record struct CreateListingResponse
     {
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public object? Product { get; set; }
+        public object? Listing { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public IEnumerable<string>? Errors { get; set; }
         public Guid RequestId => Guid.NewGuid();

@@ -6,30 +6,26 @@ using Savr.Domain.Abstractions.Persistence.Data;
 using Savr.Domain.Abstractions.Persistence.Repositories;
 using System.Net;
 
-namespace Savr.Application.Features.Products.Commands.DeleteProduct
+namespace Savr.Application.Features.Listings.Commands
 {
-    internal class DeleteProductCommandHandler : ICommandHandler<DeleteProductCommand, Result>
+    internal class DeleteListingCommandHandler : ICommandHandler<DeleteListingCommand, Result>
     {
         private readonly IListingRepository _productRepository;
-        private readonly IValidator<DeleteProductCommand> _validator;
+        
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteProductCommandHandler(IListingRepository productRepository, IValidator<DeleteProductCommand> validator, IHttpContextAccessor contextAccessor, IUnitOfWork unitOfWork)
+        public DeleteListingCommandHandler(IListingRepository productRepository, IHttpContextAccessor contextAccessor, IUnitOfWork unitOfWork)
         {
             _productRepository = productRepository;
-            _validator = validator;
+            
             _contextAccessor = contextAccessor;
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Result> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(DeleteListingCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
-            if (!validationResult.IsValid)
-            {
-                return Result.Fail(HttpStatusCode.BadRequest.ToString());
-            }
+            
 
             if (!await _productRepository.AnyAsync(request.Id, cancellationToken))
             {

@@ -5,6 +5,7 @@ using Savr.Domain.Abstractions.Persistence.Repositories;
 using Savr.Domain.Entities;
 
 using Savr.Persistence.Data;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace Savr.Persistence.Repositories
@@ -85,5 +86,70 @@ namespace Savr.Persistence.Repositories
                 return 0;
             }
         }
+
+        public async Task AddWithTagsAsync(Listing listing, List<Tag> tags, CancellationToken cancellationToken = default)
+        {
+            foreach (var tag in tags)
+            {
+                _context.Entry(tag).State = EntityState.Unchanged; // attach existing or
+                                                                   // _context.Entry(tag).State = EntityState.Added;  // for new ones
+            }
+
+            var listingTagsField = typeof(Listing)
+                .GetField("_tags", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            if (listingTagsField != null)
+            {
+                var tagList = listingTagsField.GetValue(listing) as IList<Tag>;
+                foreach (var tag in tags)
+                    tagList?.Add(tag);
+            }
+
+            await _dbSet.AddAsync(listing, cancellationToken);
+        }
+
+
+        public Task UpdateWithTags(Listing listing, List<Tag> newTags)
+        {
+            // Attach tags to ensure they are tracked
+            AttachTags(newTags);
+
+            var listingTagsField = typeof(Listing)
+                .GetField("_tags", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            if (listingTagsField != null)
+            {
+                var currentTagList = listingTagsField.GetValue(listing) as IList<Tag>;
+                if (currentTagList == null)
+                    return Task.CompletedTask;
+
+                // Clear old tags
+                currentTagList.Clear();
+
+                // Add new ones
+                foreach (var tag in newTags)
+                {
+                    currentTagList.Add(tag);
+                }
+            }
+
+            // Mark listing as modified
+            _context.Entry(listing).State = EntityState.Modified;
+
+            return Task.CompletedTask;
+        }
+
+        private void AttachTags(List<Tag> tags)
+        {
+            foreach (var tag in tags)
+            {
+                if (_context.Entry(tag).State == EntityState.Detached)
+                {
+                    _context.Attach(tag);
+                }
+            }
+        }
+
+        
     }
 }

@@ -31,10 +31,11 @@ namespace Savr.Persistence
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            
             services.AddScoped<IListingRepository, ListingRepository>();
 
             services.AddScoped<IGroupRepository, GroupRepository>();
+
+            //services.AddScoped<ITagRepository, TagRepository>();
 
             services.AddSingleton<IDapperService, DapperService>();
 
