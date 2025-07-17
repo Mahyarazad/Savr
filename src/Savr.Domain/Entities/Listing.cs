@@ -68,6 +68,9 @@ namespace Savr.Domain.Entities
                 decimal currentPrice,
                 decimal priceWithPromotion)
         {
+            if (groupId == 0)
+                return Result.Fail("GroupId is required.");
+
             if (string.IsNullOrWhiteSpace(name))
                 return Result.Fail("Name is required.");
 
@@ -117,6 +120,9 @@ namespace Savr.Domain.Entities
                                             long groupId,
                                             Guid userId)
         {
+            if (groupId == 0)
+                return Result.Fail("GroupId is required.");
+
             if (string.IsNullOrWhiteSpace(name))
                 return Result.Fail("Name is required.");
 
@@ -168,6 +174,7 @@ namespace Savr.Domain.Entities
             IsAvailable = false;
             return Result.Ok(this);
         }
+
 
 
         public void AddReview(CustomerReview review)

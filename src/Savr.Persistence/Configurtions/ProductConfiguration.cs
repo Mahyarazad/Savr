@@ -21,11 +21,11 @@ namespace Savr.Persistence.Configurtions
                 .IsRequired();
 
             builder.Property(p => p.Description)
-                .HasMaxLength(128)
+                .HasMaxLength(1500)
                 .IsRequired();
 
             builder.Property(p => p.Location)
-                .HasMaxLength(256)
+                .HasMaxLength(500)
                 .IsRequired();
 
             builder.Property(p => p.CreationDate)

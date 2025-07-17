@@ -3,10 +3,10 @@ using Savr.Domain.Primitives;
 
 
 namespace Savr.Domain.Entities;
-public class Group : BaseEntity<long>
+public class Group
 {
     protected Group() { }
-
+    public int Id { get; set; }
     public string Title { get; private set; } = default!;
     public string Description { get; private set; } = default!;
     public bool IsActive { get; private set; }
@@ -16,7 +16,7 @@ public class Group : BaseEntity<long>
     private readonly List<Listing> _listings = new();
     public IReadOnlyCollection<Listing> Listings => _listings.AsReadOnly();
 
-    private Group(string title, string description, Guid ownerUserId)
+    public Group(string title, string description, Guid ownerUserId)
     {
         Title = title;
         Description = description;
