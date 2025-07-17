@@ -77,6 +77,7 @@ namespace Savr.Application.Features.Group.Commands
             }
 
             await _groupRepository.UpdateAsync(group, cancellationToken);
+
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             var dto = _mapper.Map<GroupDTO>(group);

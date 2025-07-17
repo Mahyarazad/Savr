@@ -11,6 +11,9 @@ using Savr.Application.Features.Identity.Commands.Register;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Savr.Application.DTOs;
+using Savr.Application.Features.Identity.Queries;
+using Microsoft.EntityFrameworkCore;
 
 namespace Savr.Identity.Services
 {
@@ -109,6 +112,33 @@ namespace Savr.Identity.Services
 
             return Result.Fail(identityResult.Errors.Select(x=> x.Description).ToArray());
 
+        }
+
+        public async Task<Result<IEnumerable<ApplicationUserDto>>> GetAllUsers(CancellationToken cancellationToken = default)
+        {
+            var users = await _userManager.Users.ToListAsync(cancellationToken);
+
+            var userDtos = new List<ApplicationUserDto>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+
+                userDtos.Add(new ApplicationUserDto(
+                    Id: user.Id,
+                    UserName: user.UserName,
+                    Email: user.Email,
+                    EmailConfirmed: user.EmailConfirmed,
+                    PhoneNumber: user.PhoneNumber,
+                    PhoneNumberConfirmed: user.PhoneNumberConfirmed,
+                    TwoFactorEnabled: user.TwoFactorEnabled,
+                    Firstname: user.Firstname,
+                    Lastname: user.Lastname,
+                    Roles: roles.ToList()
+                ));
+            }
+
+            return userDtos;
         }
 
         private async Task<JwtSecurityToken> GenerateJWTToken(ApplicationUser user, IList<string> roles)
