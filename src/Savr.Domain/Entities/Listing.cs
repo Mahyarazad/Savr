@@ -10,7 +10,7 @@ namespace Savr.Domain.Entities
         public string Name { get; private set; } = default!;
         public DateTime CreationDate { get; private set; }
         public DateTime UpdateDate { get; private set; }
-        public string ManufactureEmail { get; private set; } = default!;
+        public string Description { get; private set; } = default!;
         public string? ManufacturePhone { get; private set; }
         public bool IsAvailable { get; private set; }
         public Guid UserId { get; private set; }
@@ -22,7 +22,7 @@ namespace Savr.Domain.Entities
         private Listing(string name, string manufactureEmail, string? manufacturePhone, Guid userId, long groupId)
         {
             Name = name;
-            ManufactureEmail = manufactureEmail;
+            Description = manufactureEmail;
             ManufacturePhone = manufacturePhone;
             CreationDate = DateTime.UtcNow;
             
@@ -52,7 +52,7 @@ namespace Savr.Domain.Entities
                 return Result.Fail("Manufacture email is required.");
 
             Name = name;
-            ManufactureEmail = manufactureEmail;
+            Description = manufactureEmail;
             ManufacturePhone = manufacturePhone;
             UpdateDate = DateTime.UtcNow;
             return Result.Ok(this);

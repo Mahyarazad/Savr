@@ -19,7 +19,7 @@ namespace Savr.Persistence.Configurtions
                 .HasMaxLength(500)
                 .IsRequired();
 
-            builder.Property(p => p.ManufactureEmail)
+            builder.Property(p => p.Description)
                 .HasMaxLength(128)
                 .IsRequired();
 
@@ -32,7 +32,7 @@ namespace Savr.Persistence.Configurtions
             builder.Property(p => p.IsAvailable)
                 .HasDefaultValue(true);
 
-            builder.HasIndex(p => new { p.ManufactureEmail, p.CreationDate }, "UniqueIndex_MEmail_PDate")
+            builder.HasIndex(p => new { p.Description, p.Name }, "UniqueIndex_PDes_PName")
                 .IsUnique(true);
 
             builder.HasQueryFilter(p => p.IsAvailable);

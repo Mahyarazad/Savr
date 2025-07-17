@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
+    //.MinimumLevel.Debug()
     .WriteTo.Console()
     .WriteTo.PostgreSQL(
         connectionString: builder.Configuration.GetConnectionString("postgres"),

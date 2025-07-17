@@ -14,6 +14,8 @@ using System.Text;
 using Savr.Application.DTOs;
 using Savr.Application.Features.Identity.Queries;
 using Microsoft.EntityFrameworkCore;
+using Savr.Application.Features.Identity.Commands;
+using Azure.Core;
 
 namespace Savr.Identity.Services
 {
@@ -141,6 +143,48 @@ namespace Savr.Identity.Services
             return userDtos;
         }
 
+        public async Task<Result<string>> GeneratePasswordResetLink(GeneratePasswordResetLinkCommand command, CancellationToken cancellationToken = default)
+        {
+            var user = await _userManager.Users
+                   .FirstOrDefaultAsync(u => u.Email == command.Email, cancellationToken);
+
+            if (user == null)
+            {
+                return Result.Fail("User not found.");
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            // URL encode the token
+            var encodedToken = Uri.EscapeDataString(token);
+
+            // Construct the final URL to be used in frontend (React or elsewhere)
+            var resetLink = $"{command.CallbackUrlBase}?email={Uri.EscapeDataString(user.Email)}&token={encodedToken}";
+
+            return Result.Ok(resetLink);
+        }
+
+
+        public async Task<Result> ResetPassword(ResetPasswordCommand command, CancellationToken cancellationToken = default)
+        {
+            var user = await _userManager.Users
+                   .FirstOrDefaultAsync(u => u.Email == command.Email, cancellationToken);
+
+            if (user == null)
+            {
+                return Result.Fail("User not found.");
+            }
+
+            var decodedToken = Uri.UnescapeDataString(command.Token);
+
+            var result = await _userManager.ResetPasswordAsync(user, decodedToken, command.NewPassword);
+
+            if (!result.Succeeded)
+                return Result.Fail(result.Errors.Select(e => e.Description).ToArray());
+
+            return Result.Ok();
+        }
+
         private async Task<JwtSecurityToken> GenerateJWTToken(ApplicationUser user, IList<string> roles)
         {
            // var userClaims = await _userManager.GetClaimsAsync(user);
@@ -199,5 +243,7 @@ namespace Savr.Identity.Services
                 );
             return jwtSecurityToken;
         }
+
+       
     }
 }
