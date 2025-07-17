@@ -85,7 +85,6 @@ namespace Savr.Identity
 
             services.AddScoped<IAuthService, AuthService>();
 
-            //services.AddScoped<IJwtAuthService, JwtAuthService>();
 
 
 

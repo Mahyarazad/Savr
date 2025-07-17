@@ -26,6 +26,8 @@ namespace Savr.Application
 
             services.AddScoped<IValidator<DeleteProductCommand>, DeleteProductCommandValidator>();
 
+            services.AddScoped<IValidator<DeleteProductCommand>, DeleteProductCommandValidator>();
+
             services.AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
             return services;

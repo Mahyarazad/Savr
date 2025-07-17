@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace Savr.Presentation.Configuration
@@ -78,7 +79,14 @@ namespace Savr.Presentation.Configuration
         public static IApplicationBuilder UseSwaggerDocumentation(this IApplicationBuilder app)
         {
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Savr v1"));
+            app.UseSwaggerUI(options => {
+
+                // Enable OAuth2 support
+                //options.OAuthClientId(configuration["Authentication:Google:ClientId"]);
+
+
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Savr v1");
+                });
             return app;
         }
     }

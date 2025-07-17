@@ -1,13 +1,15 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Savr.Application.Abstractions.Identity;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Savr.Identity.Models;
 using Serilog;
-using System.Data;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 
 
 namespace Savr.Presentation.Controllers
@@ -16,15 +18,20 @@ namespace Savr.Presentation.Controllers
     [Route("auth")]
     public class GoogleAuthController : ControllerBase
     {
-        private readonly IAuthService _authService;
+        
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly JwtSettings _jwtSettings;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public GoogleAuthController(IAuthService authService, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public GoogleAuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager
+            , IOptions<JwtSettings> jwtSettings, IHttpContextAccessor httpContextAccessor)
         {
-            _authService = authService;
+            
             _userManager = userManager;
             _signInManager = signInManager;
+            _jwtSettings = jwtSettings.Value;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet("google-login")]
@@ -58,12 +65,12 @@ namespace Savr.Presentation.Controllers
             var firstName = name?.Split(' ').FirstOrDefault() ?? "";
             var lastName = name?.Split(' ').Skip(1).FirstOrDefault() ?? "";
 
-            // ✅ Try to find the user by external login
+            // Try to find the user by external login
             var user = await _userManager.FindByLoginAsync("Google", googleId);
 
             if (user == null)
             {
-                // ✅ Fallback: find by email
+                // Fallback: find by email
                 user = await _userManager.FindByEmailAsync(email);
 
                 if (user != null)
@@ -83,7 +90,7 @@ namespace Savr.Presentation.Controllers
                 }
                 else
                 {
-                    // ✅ Create new user
+                    // Create new user
                     user = new ApplicationUser
                     {
                         UserName = email,
@@ -97,7 +104,7 @@ namespace Savr.Presentation.Controllers
                     if (!createResult.Succeeded)
                         return BadRequest("Failed to create user.");
 
-                    // ✅ Add external login after creating user
+                    // Add external login after creating user
                     var addLoginResult = await _userManager.AddLoginAsync(
                         user,
                         new UserLoginInfo("Google", googleId, "Google")
@@ -107,7 +114,7 @@ namespace Savr.Presentation.Controllers
                         return BadRequest("Failed to link Google login.");
                 }
 
-                // ✅ Optional: Add default role
+                // Optional: Add default role
                 var roles = await _userManager.GetRolesAsync(user);
                 if (!roles.Contains("User"))
                 {
@@ -115,11 +122,24 @@ namespace Savr.Presentation.Controllers
                 }
             }
 
-            // ✅ Generate JWT token
+            // Generate JWT token
             var userRoles = await _userManager.GetRolesAsync(user);
-            //var token = await _authService.GenerateJWTToken(user, userRoles);
+            var token = GenerateJWTToken(user, userRoles);
 
-            return Ok();
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            // Set secure cookie
+            HttpContext.Response.Cookies.Append("access_token", tokenString, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddHours(1)
+            });
+
+            // Redirect to frontend
+            return Redirect("https://localhost:3000/login-success");
+
         }
 
 
@@ -137,6 +157,50 @@ namespace Savr.Presentation.Controllers
             });
         }
 
+
+        private JwtSecurityToken GenerateJWTToken(ApplicationUser user, IList<string> roles)
+        {
+
+            var claims = new List<Claim>
+                {
+                    new Claim(JwtRegisteredClaimNames.Sub, user.UserName ?? ""),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
+                    new Claim("Uid", user.Id),
+                    new Claim("Name", user.Firstname ?? "")
+                };
+
+            if (roles.Count > 0)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, roles[0]));
+            }
+
+            // Uses the same secret key for both encryption and decryption.
+            // This key can be a password, code, or a random string of letters or numbers.
+            // Symmetric encryption is faster and easier to use than asymmetric encryption,
+            // but it's less secure because if the key is compromised, the data can be easily decrypted.
+
+            //Asymmetric encryption
+            //Uses two different keys, a public key for encryption and a private key for decryption.
+            //Asymmetric encryption may be more suitable for situations where data is exchanged between
+            //two independent parties
+
+            // found the implementation 
+            //https://stefanescueduard.github.io/2020/04/25/jwt-authentication-with-asymmetric-encryption-in-asp-dotnet-core/
+
+            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings!.Secret));
+            var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+
+            var jwtSecurityToken =
+                new JwtSecurityToken(
+                    issuer: _jwtSettings!.Issuer,
+                    audience: _jwtSettings!.Audience,
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddMinutes(30),
+                    signingCredentials: signingCredentials
+                );
+            return jwtSecurityToken;
+        }
 
     }
 }

@@ -13,6 +13,9 @@ using Serilog.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
+
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
     .WriteTo.Console()
@@ -34,6 +37,8 @@ Log.Logger = new LoggerConfiguration()
 
 
 builder.Host.UseSerilog();
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddDistributedMemoryCache();
 
@@ -126,9 +131,7 @@ app.UseSwaggerDocumentation();
 app.UseCors();
 
 app.MapControllers();
-//app.UseEndpoints(endpoints => {
-//    endpoints.MapControllers();
-//});
+
 
 app.Use(async (context, next) =>
 {

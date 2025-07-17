@@ -7,6 +7,7 @@ namespace Savr.Application.Abstractions.Identity
     public interface IAuthService
     {
         Task<Result<LoginCommandResult>> Login(LoginCommand command, CancellationToken cancellationToken = default);
+
         Task<Result<RegisterCommandResult>> Register(RegisterCommand command, CancellationToken cancellationToken = default);
     }
 }
