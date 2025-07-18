@@ -68,18 +68,24 @@ namespace Savr.Identity.Services
             if(singInResult.Succeeded)
             {
                 var token = await GenerateJWTToken(user, roles);
+
                 await _signInManager.SignInAsync(user, false);
 
-                var refreshToken = new RefreshToken
+                var existing = await _userDbContext.RefreshTokens
+                        .FirstOrDefaultAsync(x => x.UserId == user.Id && x.ExpiryDate > DateTime.UtcNow);
+
+                var refreshToken = existing ?? new RefreshToken
                 {
                     UserId = user.Id,
                     Token = Guid.NewGuid().ToString("N"),
-                    ExpiryDate = DateTime.UtcNow.AddDays(7) // adjust as needed
+                    ExpiryDate = DateTime.UtcNow.AddDays(7)
                 };
 
-
-                await _userDbContext.RefreshTokens.AddAsync(refreshToken);
-                await _userDbContext.SaveChangesAsync();
+                if (existing == null)
+                {
+                    await _userDbContext.RefreshTokens.AddAsync(refreshToken);
+                    await _userDbContext.SaveChangesAsync();
+                }
 
 
 
