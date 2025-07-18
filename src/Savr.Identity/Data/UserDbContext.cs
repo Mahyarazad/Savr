@@ -1,12 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Savr.Domain.Entities;
 using Savr.Identity.Models;
 
 namespace Savr.Identity.Data
 {
     public class UserDbContext : IdentityDbContext<ApplicationUser>
     {
+
+        public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
+
         public UserDbContext(DbContextOptions<UserDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -65,6 +69,23 @@ namespace Savr.Identity.Data
                 RoleId = adminRoleId,
                 UserId = adminUserId
             });
+
+
+            builder.Entity<ApplicationUser>()
+                .HasMany(x=>x.RefreshTokens)
+                .WithOne(x=>x.User)
+                .HasForeignKey(x=>x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+                        builder.Entity<ApplicationUser>()
+                            .Navigation(nameof(ApplicationUser.RefreshTokens))
+                            .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+                        builder.Entity<RefreshToken>()
+                            .ToTable(nameof(RefreshToken));
+
+
+
         }
     }
 }

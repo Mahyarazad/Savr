@@ -16,6 +16,9 @@ using Savr.Application.Features.Identity.Queries;
 using Microsoft.EntityFrameworkCore;
 using Savr.Application.Features.Identity.Commands;
 using Azure.Core;
+using System.Security.Cryptography;
+using Savr.Application;
+using Savr.Identity.Data;
 
 namespace Savr.Identity.Services
 {
@@ -24,14 +27,16 @@ namespace Savr.Identity.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly JwtSettings _jwtSettings;
+        private readonly UserDbContext _userDbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
         public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager
-            , IHttpContextAccessor httpContextAccessor
+            , IHttpContextAccessor httpContextAccessor, UserDbContext userDbContext
             , IOptions<JwtSettings> jwtSettings)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _jwtSettings = jwtSettings.Value;
+            _userDbContext = userDbContext;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -64,10 +69,24 @@ namespace Savr.Identity.Services
             {
                 var token = await GenerateJWTToken(user, roles);
                 await _signInManager.SignInAsync(user, false);
+
+                var refreshToken = new RefreshToken
+                {
+                    UserId = user.Id,
+                    Token = Guid.NewGuid().ToString("N"),
+                    ExpiryDate = DateTime.UtcNow.AddDays(7) // adjust as needed
+                };
+
+
+                await _userDbContext.RefreshTokens.AddAsync(refreshToken);
+                await _userDbContext.SaveChangesAsync();
+
+
+
                 //_httpContextAccessor.HttpContext.Session.SetString("UserName", user.Email.Split("@")[0]);
                 //_httpContextAccessor.HttpContext.Session.SetString("USer", System.Text.Json.JsonSerializer.Serialize(user));
 
-                return Result.Ok(new LoginCommandResult(user.Id, user.UserName, user.Email, new JwtSecurityTokenHandler().WriteToken(token)));
+                return Result.Ok(new LoginCommandResult(user.Id, user.UserName, user.Email, new JwtSecurityTokenHandler().WriteToken(token), refreshToken.Token, refreshToken.ExpiryDate));
             }
 
             return Result.Fail("Invalid password.");
@@ -243,7 +262,5 @@ namespace Savr.Identity.Services
                 );
             return jwtSecurityToken;
         }
-
-       
     }
 }

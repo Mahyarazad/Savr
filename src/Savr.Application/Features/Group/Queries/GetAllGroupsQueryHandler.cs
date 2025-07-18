@@ -23,7 +23,7 @@ namespace Savr.Application.Features.Group.Queries
 
             if (result.Any())
             {
-                return Result.Ok( _mapper.Map<IEnumerable<GroupDTO>>(result));
+                return Result.Ok( _mapper.Map<IEnumerable<GroupDTO>>(result.OrderByDescending(x=>x.Id)));
             }
 
             return Result.Ok(Enumerable.Empty<GroupDTO>());

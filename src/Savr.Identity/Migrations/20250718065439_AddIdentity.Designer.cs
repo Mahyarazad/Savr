@@ -12,8 +12,8 @@ using Savr.Identity.Data;
 namespace Savr.Identity.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20250715071248_InitIdentitySchema")]
-    partial class InitIdentitySchema
+    [Migration("20250718065439_AddIdentity")]
+    partial class AddIdentity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,6 +49,26 @@ namespace Savr.Identity.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "4A09F2F2-0D33-4C1A-9E3A-5D1A2A97FCF5",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "67D1B924-F5A6-4D2F-B6A0-1D10D2037991",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = "C8419DF1-3F2E-4E7E-81D4-C8D48B3A2921",
+                            Name = "Merchant",
+                            NormalizedName = "MERCHANT"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -136,6 +156,13 @@ namespace Savr.Identity.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "3d32337a-7372-4261-98b9-8352c83d8751",
+                            RoleId = "4A09F2F2-0D33-4C1A-9E3A-5D1A2A97FCF5"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -227,6 +254,52 @@ namespace Savr.Identity.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "3d32337a-7372-4261-98b9-8352c83d8751",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "6769e7ca-1dcc-40ef-8abf-3e3076ca1013",
+                            Email = "maahyarazad@gmail.com",
+                            EmailConfirmed = true,
+                            Firstname = "Maahyar",
+                            Lastname = "Azad",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "MAAHYARAZAD@GMAIL.COM",
+                            NormalizedUserName = "MAAHYARAZAD",
+                            PasswordHash = "AQAAAAIAAYagAAAAENTnQIETFV9RrKYbngRrYqwME4ikdHJMr1M2PBpfxu0HYaH3EK6ygHJ+OTH1F1Y5cA==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "bbbc138d-c84e-4460-a59e-2858e1fb5852",
+                            TwoFactorEnabled = false,
+                            UserName = "maahyarazad"
+                        });
+                });
+
+            modelBuilder.Entity("Savr.Identity.Models.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshToken", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -278,6 +351,22 @@ namespace Savr.Identity.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Savr.Identity.Models.RefreshToken", b =>
+                {
+                    b.HasOne("Savr.Identity.Models.ApplicationUser", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Savr.Identity.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618
         }

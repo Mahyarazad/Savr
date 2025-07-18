@@ -61,7 +61,6 @@ namespace Savr.Persistence.Configurtions
             builder.HasIndex(p => new { p.Description, p.Name }, "UniqueIndex_PDes_PName")
                 .IsUnique(true);
 
-            builder.HasQueryFilter(p => p.IsAvailable);
 
             builder.HasMany(p => p.Tags)
                 .WithOne(x=>x.Listing)

@@ -6,7 +6,7 @@ namespace Savr.Domain.Entities;
 public class Group
 {
     protected Group() { }
-    public int Id { get; set; }
+    public long Id { get; set; }
     public string Title { get; private set; } = default!;
     public string Description { get; private set; } = default!;
     public bool IsActive { get; private set; }
@@ -15,6 +15,16 @@ public class Group
 
     private readonly List<Listing> _listings = new();
     public IReadOnlyCollection<Listing> Listings => _listings.AsReadOnly();
+
+    public Group(long id, string title, string description, Guid ownerUserId)
+    {
+        Id = id;
+        Title = title;
+        Description = description;
+        OwnerUserId = ownerUserId;
+        CreatedAt = DateTime.UtcNow;
+        IsActive = true;
+    }
 
     public Group(string title, string description, Guid ownerUserId)
     {
@@ -55,7 +65,7 @@ public class Group
     }
 
 
-    public Result<Group> Update(string title, string description)
+    public Result<Group> Update(string title, string description, bool isActive)
     {
         if (string.IsNullOrWhiteSpace(title))
             return Result.Fail("Title cannot be empty.");
@@ -65,25 +75,10 @@ public class Group
 
         Title = title;
         Description = description;
+        IsActive = isActive;
 
         return Result.Ok(this);
     }
 
-    public Result<Group> Activate()
-    {
-        if (IsActive)
-            return Result.Fail("Group is already active.");
-
-        IsActive = true;
-        return Result.Ok(this);
-    }
-
-    public Result<Group> Deactivate()
-    {
-        if (!IsActive)
-            return Result.Fail("Group is already inactive.");
-
-        IsActive = false;
-        return Result.Ok(this);
-    }
+   
 }

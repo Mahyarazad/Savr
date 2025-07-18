@@ -63,12 +63,13 @@ namespace Savr.Application.Features.Group.Commands
             }
 
             var group = await _groupRepository.GetByIdAsync(request.Id, cancellationToken);
+
             if (group is null)
             {
                 return Result.Fail($"Could not load group with ID {request.Id}.");
             }
 
-            var updateResult = group.Update(request.Title, request.Description);
+            var updateResult = group.Update(request.Title, request.Description, request.IsActive);
 
 
             if (updateResult.IsFailed)

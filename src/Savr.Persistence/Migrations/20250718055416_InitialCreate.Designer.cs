@@ -12,8 +12,8 @@ using Savr.Persistence.Data;
 namespace Savr.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250717091731_EnrichListing")]
-    partial class EnrichListing
+    [Migration("20250718055416_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -87,7 +87,108 @@ namespace Savr.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Groups");
+                    b.ToTable("Group", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7754),
+                            Description = "Restaurants, cafes, and food delivery services.",
+                            IsActive = true,
+                            OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
+                            Title = "Food & Drinks"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7759),
+                            Description = "Gyms, spas, salons, and wellness services.",
+                            IsActive = true,
+                            OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
+                            Title = "Beauty & Fitness"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7760),
+                            Description = "Entertainment venues, attractions, and recreational activities.",
+                            IsActive = true,
+                            OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
+                            Title = "Attraction & Leisure"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7761),
+                            Description = "Clothing stores, boutiques, and shopping centers.",
+                            IsActive = true,
+                            OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
+                            Title = "Fashion & Retail"
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7762),
+                            Description = "Essential services for daily needs like laundry or repairs.",
+                            IsActive = true,
+                            OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
+                            Title = "Everyday Services"
+                        },
+                        new
+                        {
+                            Id = 6L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7763),
+                            Description = "Hotels, travel agencies, and transportation services.",
+                            IsActive = true,
+                            OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
+                            Title = "Hotel & Travel"
+                        },
+                        new
+                        {
+                            Id = 7L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7764),
+                            Description = "Schools, tutors, and educational institutions.",
+                            IsActive = true,
+                            OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
+                            Title = "Education"
+                        },
+                        new
+                        {
+                            Id = 8L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7766),
+                            Description = "Hospitals, clinics, and healthcare providers.",
+                            IsActive = true,
+                            OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
+                            Title = "Healthcare"
+                        },
+                        new
+                        {
+                            Id = 9L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7767),
+                            Description = "Banks, insurance, and financial consulting.",
+                            IsActive = true,
+                            OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
+                            Title = "Financial Services"
+                        },
+                        new
+                        {
+                            Id = 10L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7768),
+                            Description = "Property listings, realtors, and housing services.",
+                            IsActive = true,
+                            OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
+                            Title = "Real Estate"
+                        },
+                        new
+                        {
+                            Id = 11L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7769),
+                            Description = "Professional consulting for businesses or individuals.",
+                            IsActive = true,
+                            OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
+                            Title = "Consulting"
+                        });
                 });
 
             modelBuilder.Entity("Savr.Domain.Entities.Listing", b =>
@@ -115,8 +216,8 @@ namespace Savr.Persistence.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
+                        .HasMaxLength(1500)
+                        .HasColumnType("character varying(1500)");
 
                     b.Property<long>("GroupId")
                         .HasColumnType("bigint");
@@ -128,8 +229,8 @@ namespace Savr.Persistence.Migrations
 
                     b.Property<string>("Location")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("Name")
                         .IsRequired()

@@ -59,11 +59,11 @@ namespace Savr.Persistence.Migrations
 
             modelBuilder.Entity("Savr.Domain.Entities.Group", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -84,13 +84,13 @@ namespace Savr.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Groups");
+                    b.ToTable("Group", (string)null);
 
                     b.HasData(
                         new
                         {
-                            Id = -1,
-                            CreatedAt = new DateTime(2025, 7, 17, 13, 18, 49, 966, DateTimeKind.Utc).AddTicks(6836),
+                            Id = 1L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7754),
                             Description = "Restaurants, cafes, and food delivery services.",
                             IsActive = true,
                             OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
@@ -98,8 +98,8 @@ namespace Savr.Persistence.Migrations
                         },
                         new
                         {
-                            Id = -2,
-                            CreatedAt = new DateTime(2025, 7, 17, 13, 18, 49, 966, DateTimeKind.Utc).AddTicks(6838),
+                            Id = 2L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7759),
                             Description = "Gyms, spas, salons, and wellness services.",
                             IsActive = true,
                             OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
@@ -107,8 +107,8 @@ namespace Savr.Persistence.Migrations
                         },
                         new
                         {
-                            Id = -3,
-                            CreatedAt = new DateTime(2025, 7, 17, 13, 18, 49, 966, DateTimeKind.Utc).AddTicks(6839),
+                            Id = 3L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7760),
                             Description = "Entertainment venues, attractions, and recreational activities.",
                             IsActive = true,
                             OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
@@ -116,8 +116,8 @@ namespace Savr.Persistence.Migrations
                         },
                         new
                         {
-                            Id = -4,
-                            CreatedAt = new DateTime(2025, 7, 17, 13, 18, 49, 966, DateTimeKind.Utc).AddTicks(6840),
+                            Id = 4L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7761),
                             Description = "Clothing stores, boutiques, and shopping centers.",
                             IsActive = true,
                             OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
@@ -125,8 +125,8 @@ namespace Savr.Persistence.Migrations
                         },
                         new
                         {
-                            Id = -5,
-                            CreatedAt = new DateTime(2025, 7, 17, 13, 18, 49, 966, DateTimeKind.Utc).AddTicks(6841),
+                            Id = 5L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7762),
                             Description = "Essential services for daily needs like laundry or repairs.",
                             IsActive = true,
                             OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
@@ -134,8 +134,8 @@ namespace Savr.Persistence.Migrations
                         },
                         new
                         {
-                            Id = -6,
-                            CreatedAt = new DateTime(2025, 7, 17, 13, 18, 49, 966, DateTimeKind.Utc).AddTicks(6842),
+                            Id = 6L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7763),
                             Description = "Hotels, travel agencies, and transportation services.",
                             IsActive = true,
                             OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
@@ -143,8 +143,8 @@ namespace Savr.Persistence.Migrations
                         },
                         new
                         {
-                            Id = -7,
-                            CreatedAt = new DateTime(2025, 7, 17, 13, 18, 49, 966, DateTimeKind.Utc).AddTicks(6843),
+                            Id = 7L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7764),
                             Description = "Schools, tutors, and educational institutions.",
                             IsActive = true,
                             OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
@@ -152,8 +152,8 @@ namespace Savr.Persistence.Migrations
                         },
                         new
                         {
-                            Id = -8,
-                            CreatedAt = new DateTime(2025, 7, 17, 13, 18, 49, 966, DateTimeKind.Utc).AddTicks(6844),
+                            Id = 8L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7766),
                             Description = "Hospitals, clinics, and healthcare providers.",
                             IsActive = true,
                             OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
@@ -161,8 +161,8 @@ namespace Savr.Persistence.Migrations
                         },
                         new
                         {
-                            Id = -9,
-                            CreatedAt = new DateTime(2025, 7, 17, 13, 18, 49, 966, DateTimeKind.Utc).AddTicks(6845),
+                            Id = 9L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7767),
                             Description = "Banks, insurance, and financial consulting.",
                             IsActive = true,
                             OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
@@ -170,8 +170,8 @@ namespace Savr.Persistence.Migrations
                         },
                         new
                         {
-                            Id = -10,
-                            CreatedAt = new DateTime(2025, 7, 17, 13, 18, 49, 966, DateTimeKind.Utc).AddTicks(6846),
+                            Id = 10L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7768),
                             Description = "Property listings, realtors, and housing services.",
                             IsActive = true,
                             OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
@@ -179,8 +179,8 @@ namespace Savr.Persistence.Migrations
                         },
                         new
                         {
-                            Id = -11,
-                            CreatedAt = new DateTime(2025, 7, 17, 13, 18, 49, 966, DateTimeKind.Utc).AddTicks(6847),
+                            Id = 11L,
+                            CreatedAt = new DateTime(2025, 7, 18, 5, 54, 16, 668, DateTimeKind.Utc).AddTicks(7769),
                             Description = "Professional consulting for businesses or individuals.",
                             IsActive = true,
                             OwnerUserId = new Guid("3d32337a-7372-4261-98b9-8352c83d8751"),
@@ -219,9 +219,6 @@ namespace Savr.Persistence.Migrations
                     b.Property<long>("GroupId")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("GroupId1")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("IsAvailable")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -259,7 +256,7 @@ namespace Savr.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupId1");
+                    b.HasIndex("GroupId");
 
                     b.HasIndex(new[] { "Description", "Name" }, "UniqueIndex_PDes_PName")
                         .IsUnique();
@@ -304,7 +301,9 @@ namespace Savr.Persistence.Migrations
                 {
                     b.HasOne("Savr.Domain.Entities.Group", "Group")
                         .WithMany("Listings")
-                        .HasForeignKey("GroupId1");
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Group");
                 });
