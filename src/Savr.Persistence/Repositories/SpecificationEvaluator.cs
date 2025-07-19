@@ -1,11 +1,11 @@
-﻿using Savr.Domain.Abstractions;
-using Savr.Domain.Primitives;
+﻿using Savr.Application.Abstractions;
+
 
 namespace Savr.Persistence.Repositories
 {
     public  class SpecificationEvaluator<T>
     {
-        public static IQueryable<T> GetQuery(IQueryable<T> inputQuery, Domain.Abstractions.ISpecification<T> specification)
+        public static IQueryable<T> GetQuery(IQueryable<T> inputQuery, Application.Abstractions.ISpecification<T> specification)
         {
             IQueryable<T> query = inputQuery;
 

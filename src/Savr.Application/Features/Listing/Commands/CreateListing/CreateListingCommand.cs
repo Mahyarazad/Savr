@@ -1,6 +1,6 @@
 ﻿using FluentResults;
 using Savr.Application.Abstractions.Messaging;
-using Savr.Application.DTOs;
+using Savr.Application.Features.Listing;
 
 namespace Savr.Application.Features.Listings.Commands
 {

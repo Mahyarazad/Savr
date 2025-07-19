@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
 using FluentResults;
-using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Savr.Application.Abstractions.Messaging;
-using Savr.Application.DTOs;
+using Savr.Application.Abstractions.Persistence.Data;
+using Savr.Application.Abstractions.Persistence.Repositories;
+using Savr.Application.Features.Identity;
+using Savr.Application.Features.Listing;
 
-using Savr.Application.Helpers;
-using Savr.Domain.Abstractions.Persistence.Data;
-using Savr.Domain.Abstractions.Persistence.Repositories;
 using Savr.Domain.Entities;
 
 namespace Savr.Application.Features.Listings.Commands
@@ -17,7 +16,7 @@ namespace Savr.Application.Features.Listings.Commands
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IListingRepository _listingRepository;
-        //private readonly ITagRepository _tagRepository;
+        
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _contextAccessor;
 
@@ -48,10 +47,8 @@ namespace Savr.Application.Features.Listings.Commands
                 return Result.Fail("Invalid user ID format.");
             }
 
-          
 
-
-            var creationResult = Listing.Create(
+            var creationResult = Savr.Domain.Entities.Listing.Create(
                 request.Name,
                 request.Description,
                 request.Location,
@@ -70,21 +67,17 @@ namespace Savr.Application.Features.Listings.Commands
 
             var entity = creationResult.Value;
 
-            // Convert TagNames (List<string>) to Tag entities
-            var tags = request.TagNames
-                .Where(tagName => !string.IsNullOrWhiteSpace(tagName))
-                .Distinct()
-                .Select(tagName => new Tag(tagName.Trim()))
-                .ToList();
+            entity.AddTags(request.TagNames);
 
-            await _listingRepository.AddWithTagsAsync(entity, tags, cancellationToken);
+            await _listingRepository.AddAsync(entity, cancellationToken);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-
 
             var dto = _mapper.Map<ListingDTO>(entity);
             return Result.Ok(dto);
         }
 
+
+      
     }
 }

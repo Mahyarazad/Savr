@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Savr.Application.Abstractions;
 using Savr.Application.Features.Listings.Commands;
 using Savr.Application.Features.Products.Commands.UpdateProduct;
 using Savr.Application.Features.Products.Queries;
@@ -12,7 +13,7 @@ using System.Net;
 namespace Savr.Presentation.Controllers
 {
     [ApiController]
-    [Authorize(Roles = "Admin,Merchant")]
+    //[Authorize(Roles = "Admin,Merchant")]
     [Route("api/v1/listing")]
     public class ListingController : ControllerBase
     {
@@ -54,8 +55,8 @@ namespace Savr.Presentation.Controllers
         public async Task<IActionResult> GetProductList(
             [FromQuery, Required] int pageNumber,
             [FromQuery, Required] int pageSize,
-            string? nameFilter, string? manufactureEmailFilter
-            , string? phoneFilter, CancellationToken cancellationToken)
+            [FromQuery] IEnumerable<SqlFilter> filters,
+            CancellationToken cancellationToken)
         {
             var ipConfig = HttpContext.Connection.RemoteIpAddress;
             var ip = HttpContext.Request.Headers;
@@ -71,12 +72,8 @@ namespace Savr.Presentation.Controllers
                 // sessionData will contain the data stored in Redis for the session
             }
 
-            var result = await _sender.Send(new GetListingListQuery(pageNumber, pageSize, nameFilter, manufactureEmailFilter, phoneFilter), cancellationToken);
-            return Ok(new 
-            { 
-                TotalCount = result.Count(), 
-                Items = result 
-            });
+            var result = await _sender.Send(new GetListingListQuery(pageNumber, pageSize, filters), cancellationToken);
+            return Ok(result);
         }
 
         [HttpDelete("soft-delete")]

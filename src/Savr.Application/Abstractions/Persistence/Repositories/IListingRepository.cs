@@ -1,7 +1,9 @@
 ﻿using FluentResults;
 using Savr.Domain.Entities;
+using Savr.Application.Abstractions.Persistence.Data;
+using Savr.Application.Features.Listing;
 
-namespace Savr.Domain.Abstractions.Persistence.Repositories
+namespace Savr.Application.Abstractions.Persistence.Repositories
 {
     public interface IListingRepository : IRepository<Listing>
     {
@@ -15,11 +17,10 @@ namespace Savr.Domain.Abstractions.Persistence.Repositories
         Task<int> DeActivate(long groupId, CancellationToken cancellationToken = default);
 
         Task<bool> DoesUserOwnThisListingAsync(long listingId, Guid userId, CancellationToken cancellationToken = default);
-        Task<IEnumerable<Listing>> GetListingListAsync(
+
+        Task<Application.Abstractions.PagedResult<ListingDTO>> GetListingListAsync(
             int pageNumber,
             int pageSize,
-            string? nameFilter,
-            string? manufactureEmailFilter,
-            string? phoneFilter);
+            IEnumerable<Application.Abstractions.SqlFilter>? filters = null);
     }
 }

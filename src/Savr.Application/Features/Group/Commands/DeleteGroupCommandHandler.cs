@@ -4,13 +4,15 @@ using FluentResults;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Savr.Application.Abstractions.Messaging;
-using Savr.Domain.Abstractions.Persistence.Data;
-using Savr.Domain.Abstractions.Persistence.Repositories;
+using Savr.Application.Abstractions.Persistence.Data;
+using Savr.Application.Abstractions.Persistence.Repositories;
+
 using System.Net;
 
 namespace Savr.Application.Features.Group.Commands
 {
-    internal class DeleteGroupCommandHandler : ICommandHandler<DeleteGroupCommand, Result>
+    public record struct DeleteGroupCommand(long Id) : ICommand<Result>;
+    public class DeleteGroupCommandHandler : ICommandHandler<DeleteGroupCommand, Result>
     {
         private readonly IGroupRepository _groupRepository;
         //private readonly IValidator<DeleteGroupCommand> _validator;

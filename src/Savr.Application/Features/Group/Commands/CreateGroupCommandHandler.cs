@@ -3,14 +3,16 @@ using FluentResults;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Savr.Application.Abstractions.Messaging;
+using Savr.Application.Abstractions.Persistence.Data;
+using Savr.Application.Abstractions.Persistence.Repositories;
 using Savr.Application.Helpers;
-using Savr.Domain.Abstractions.Persistence.Data;
-using Savr.Domain.Abstractions.Persistence.Repositories;
+
 
 
 
 namespace Savr.Application.Features.Group.Commands
 {
+    public record struct CreateGroupCommand(string Title, string Description) : ICommand<Result<GroupDTO>>;
     public class CreateGroupCommandHandler : ICommandHandler<CreateGroupCommand, Result<GroupDTO>>
     {
         private readonly IUnitOfWork _unitOfWork;

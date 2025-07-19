@@ -3,13 +3,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Savr.Application.Abstractions.Data;
 using Savr.Application.Feature.Data;
-using Savr.Domain.Abstractions.Persistence.Data;
-using Savr.Domain.Abstractions.Persistence.Repositories;
 using Savr.Persistence.Data;
 using Savr.Persistence.Profiles;
 using Savr.Persistence.Repositories;
 using System.Reflection;
 using Npgsql;
+using Savr.Application.Abstractions.Persistence.Data;
+using Savr.Application.Abstractions.Persistence.Repositories;
 
 namespace Savr.Persistence 
 {
@@ -35,7 +35,9 @@ namespace Savr.Persistence
 
             services.AddScoped<IGroupRepository, GroupRepository>();
 
-            //services.AddScoped<ITagRepository, TagRepository>();
+            
+
+            services.AddScoped<ICustomerReviewRepository, CustomerReviewRepository>();
 
             services.AddSingleton<IDapperService, DapperService>();
 

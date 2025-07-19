@@ -1,12 +1,15 @@
 ﻿using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Savr.Application.Abstractions.Data;
-using Savr.Domain.Abstractions.Persistence.Repositories;
 using Savr.Domain.Entities;
 
 using Savr.Persistence.Data;
 using System.Reflection;
-using System.Text.RegularExpressions;
+using System.Data;
+using Savr.Application.Abstractions;
+using Savr.Application.Abstractions.Persistence.Data;
+using Savr.Application.Abstractions.Persistence.Repositories;
+using Savr.Application.Features.Listing;
 
 namespace Savr.Persistence.Repositories
 {
@@ -15,7 +18,7 @@ namespace Savr.Persistence.Repositories
         private readonly ApplicationDbContext _context;
         private readonly IDapperService _dapper;
 
-        public ListingRepository(ApplicationDbContext context, IDapperService dapper) : base (context)
+        public ListingRepository(ApplicationDbContext context, IDapperService dapper) : base(context)
         {
             _context = context;
             _dapper = dapper;
@@ -27,23 +30,59 @@ namespace Savr.Persistence.Repositories
                 .AnyAsync(x => x.Id == listingId && x.UserId == userId, cancellationToken);
         }
 
-        public async Task<IEnumerable<Listing>> GetListingListAsync(
-            int pageNumber, int pageSize,
-            string? nameFilter, string? manufactureEmailFilter, string? phoneFilter)
-        {
-            var parameters = new DynamicParameters();
-            parameters.Add("PageNumber", pageNumber, System.Data.DbType.Int16, System.Data.ParameterDirection.Input);
-            parameters.Add("PageSize", pageSize, System.Data.DbType.Int16, System.Data.ParameterDirection.Input);
-            parameters.Add("NameFilter", nameFilter, System.Data.DbType.String, System.Data.ParameterDirection.Input);
-            parameters.Add("ManufactureEmailFilter", manufactureEmailFilter, System.Data.DbType.String, System.Data.ParameterDirection.Input);
-            parameters.Add("PhoneFilter", phoneFilter, System.Data.DbType.String, System.Data.ParameterDirection.Input);
 
-            using var connection = _dapper.CreateConnection();
-            return await connection.QueryAsync<Listing>(
-                "GetFilteredDataWithPagination",
-                parameters,
-                commandType: System.Data.CommandType.StoredProcedure);
+
+
+        public async Task<Application.Abstractions.PagedResult<ListingDTO>> GetListingListAsync(
+            int pageNumber , 
+            int pageSize,
+            IEnumerable<Application.Abstractions.SqlFilter>? filters = null)
+        {
+            var query = _context.Set<Listing>().AsQueryable();
+
+            // Apply dynamic filters
+            if (filters != null)
+            {
+                foreach (var filter in filters)
+                {
+                    query = FilterExtensions.ApplyFilter(query, filter);
+                }
+            }
+
+            // Get total count
+            var totalCount = await query.CountAsync();
+
+            // Get paginated data
+            var items = await query
+                .OrderByDescending(x => x.Id) // Default order
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(x => new ListingDTO(
+                    x.Id,
+                    x.Name,
+                    x.CreationDate,
+                    x.UpdateDate,
+                    x.Description,
+                    x.Location,
+                    x.AverageRating,
+                    x.IsAvailable,
+                    x.UserId,
+                    x.GroupId,
+                    x.PreviousPrice,
+                    x.CurrentPrice,
+                    x.PriceWithPromotion,
+                    x.PriceDropPercentage
+                ))
+                .ToListAsync();
+
+            return new PagedResult<ListingDTO>
+            {
+                TotalCount = totalCount,
+                Items = items
+            };
         }
+
+
 
         public async Task<int> Activate(long groupId, CancellationToken cancellationToken = default)
         {
@@ -150,6 +189,6 @@ namespace Savr.Persistence.Repositories
             }
         }
 
-        
+
     }
 }

@@ -11,7 +11,6 @@ using Savr.Application.Features.Identity.Commands.Register;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Savr.Application.DTOs;
 using Savr.Application.Features.Identity.Queries;
 using Microsoft.EntityFrameworkCore;
 using Savr.Application.Features.Identity.Commands;
@@ -19,6 +18,7 @@ using Azure.Core;
 using System.Security.Cryptography;
 using Savr.Application;
 using Savr.Identity.Data;
+using Savr.Application.Features.Identity;
 
 namespace Savr.Identity.Services
 {

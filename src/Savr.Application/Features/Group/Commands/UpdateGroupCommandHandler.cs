@@ -5,13 +5,14 @@ using FluentResults;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Savr.Application.Abstractions.Messaging;
-using Savr.Application.Helpers;
-using Savr.Domain.Abstractions.Persistence.Data;
-using Savr.Domain.Abstractions.Persistence.Repositories;
+using Savr.Application.Abstractions.Persistence.Data;
+using Savr.Application.Abstractions.Persistence.Repositories;
+
 
 
 namespace Savr.Application.Features.Group.Commands
 {
+    public record struct UpdateGroupCommand(long Id, string Title, string Description, bool IsActive) : ICommand<Result<GroupDTO>>;
     public class UpdateGroupCommandHandler : ICommandHandler<UpdateGroupCommand, Result<GroupDTO>>
     {
         private readonly IGroupRepository _groupRepository;

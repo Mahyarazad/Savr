@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Savr.Domain.Abstractions.Persistence.Repositories;
+using Savr.Application.Abstractions.Persistence.Repositories;
 using System.Linq.Expressions;
 
 namespace Savr.Persistence.Repositories
@@ -39,6 +39,11 @@ namespace Savr.Persistence.Repositories
 
             _dbSet.Remove(entity);
             
+        }
+
+        public virtual async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
+        {
+            await _dbSet.AddRangeAsync(entities, cancellationToken);
         }
 
         public virtual async Task<bool> AnyAsync(long id, CancellationToken cancellationToken = default)

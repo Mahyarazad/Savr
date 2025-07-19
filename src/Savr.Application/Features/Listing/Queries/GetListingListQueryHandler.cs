@@ -1,13 +1,16 @@
 ﻿using AutoMapper;
 using MediatR;
+using Savr.Application.Abstractions;
 using Savr.Application.Abstractions.Messaging;
-using Savr.Application.DTOs;
-using Savr.Domain.Abstractions.Persistence.Repositories;
+using Savr.Application.Abstractions.Persistence.Data;
+using Savr.Application.Abstractions.Persistence.Repositories;
+using Savr.Application.Features.Listing;
+
 using System.Linq;
 
 namespace Savr.Application.Features.Products.Queries
 {
-    public class GetListingListQueryHandler : IListQueryHandler<GetListingListQuery, IEnumerable<ListingDTO>>
+    public class GetListingListQueryHandler : IListQueryHandler<GetListingListQuery, PagedResult<ListingDTO>>
     {
         private readonly IListingRepository _productRepository;
         private readonly IMapper _mapper;
@@ -18,17 +21,12 @@ namespace Savr.Application.Features.Products.Queries
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ListingDTO>> Handle(GetListingListQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResult<ListingDTO>> Handle(GetListingListQuery request, CancellationToken cancellationToken)
         {
-            var repoResult = await _productRepository.GetListingListAsync(request.pageNumber, request.pageSize,
-                request.NameFilter, request.ManufactureEmailFilter, request.PhoneFilter);
+            return await _productRepository.GetListingListAsync(request.pageNumber, request.pageSize,
+               request.Filters);
 
-            if(repoResult.Any())
-            {
-                return _mapper.Map<List<ListingDTO>>(repoResult);
-            }
-
-            return Enumerable.Empty<ListingDTO>();
+            
         }
     }
 }

@@ -2,8 +2,9 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Savr.Application.Abstractions.Messaging;
-using Savr.Domain.Abstractions.Persistence.Data;
-using Savr.Domain.Abstractions.Persistence.Repositories;
+using Savr.Application.Abstractions.Persistence.Data;
+using Savr.Application.Abstractions.Persistence.Repositories;
+
 using System.Net;
 
 namespace Savr.Application.Features.Listings.Commands

@@ -1,4 +1,4 @@
-﻿namespace Savr.Application
+﻿namespace Savr.Application.Features.Identity
 {
     public class RefereshToken
     {

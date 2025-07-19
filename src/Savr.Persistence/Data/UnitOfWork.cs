@@ -1,4 +1,7 @@
-﻿using Savr.Domain.Abstractions.Persistence.Data;
+﻿
+
+
+using Savr.Application.Abstractions.Persistence.Data;
 
 namespace Savr.Persistence.Data
 {

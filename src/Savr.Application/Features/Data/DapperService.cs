@@ -1,5 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using Npgsql;
 using Savr.Application.Abstractions.Data;
 using System.Data;
 
@@ -16,7 +16,7 @@ namespace Savr.Application.Feature.Data
 
         public IDbConnection CreateConnection()
         {
-            return new SqlConnection(_configurtion.GetConnectionString("MSSqlServer"));
+            return new NpgsqlConnection(_configurtion.GetConnectionString("Postgres"));
         }
     }
 }

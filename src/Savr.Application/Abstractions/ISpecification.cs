@@ -1,6 +1,6 @@
 ﻿using Savr.Domain.Primitives;
 
-namespace Savr.Domain.Abstractions
+namespace Savr.Application.Abstractions
 {
     public interface ISpecification<T>
     {

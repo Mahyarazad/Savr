@@ -2,7 +2,7 @@
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using Savr.Application.Abstractions.Data;
-using Savr.Domain.Abstractions.Persistence.Repositories;
+using Savr.Application.Abstractions.Persistence.Repositories;
 using Savr.Domain.Entities;
 using Savr.Persistence.Data;
 

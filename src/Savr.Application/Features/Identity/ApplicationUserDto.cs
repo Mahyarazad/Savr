@@ -1,4 +1,4 @@
-﻿namespace Savr.Application.DTOs
+﻿namespace Savr.Application.Features.Identity
 {
     public record struct ApplicationUserDto(
         string Id,

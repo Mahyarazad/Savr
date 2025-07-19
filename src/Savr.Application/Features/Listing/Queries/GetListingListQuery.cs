@@ -1,9 +1,11 @@
-﻿using Savr.Application.Abstractions.Messaging;
-using Savr.Application.DTOs;
+﻿using Savr.Application.Abstractions;
+using Savr.Application.Abstractions.Messaging;
+using Savr.Application.Features.Listing;
+
 namespace Savr.Application.Features.Products.Queries
 {
     public record struct GetListingListQuery(int pageNumber, int pageSize,
-        string? NameFilter, string? ManufactureEmailFilter, string? PhoneFilter) : IListQuery<IEnumerable<ListingDTO>>
+        IEnumerable<SqlFilter> Filters) : IListQuery<PagedResult<ListingDTO>>
     {
     }
 }

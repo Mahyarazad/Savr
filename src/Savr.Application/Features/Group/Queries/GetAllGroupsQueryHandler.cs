@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using FluentResults;
 using Savr.Application.Abstractions.Messaging;
-using Savr.Domain.Abstractions.Persistence.Repositories;
+using Savr.Application.Abstractions.Persistence.Repositories;
+
 
 namespace Savr.Application.Features.Group.Queries
 {

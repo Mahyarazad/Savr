@@ -36,6 +36,8 @@ namespace Savr.Domain.Entities
         // Auto-calculated field
         public double PriceDropPercentage { get; private set; }
 
+
+
         private Listing(string name, DateTime creationDate, DateTime updateDate, string description, string location, decimal averageRating, List<Tag> tags, bool isAvailable, Guid userId, long groupId, Group? group, List<CustomerReview> reviews, decimal previousPrice, decimal currentPrice, decimal priceWithPromotion, double priceDropPercentage)
         {
             Name = name;
@@ -110,6 +112,7 @@ namespace Savr.Domain.Entities
         }
 
 
+
         public Result<Listing> Update(
                             string name,
                             string description,
@@ -175,7 +178,13 @@ namespace Savr.Domain.Entities
             return Result.Ok(this);
         }
 
-
+        public void AddTags(IEnumerable<string> tagNames)
+        {
+            _tags.AddRange(tagNames
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .Distinct()
+                .Select(name => new Tag(name.Trim())));
+        }
 
         public void AddReview(CustomerReview review)
         {

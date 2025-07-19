@@ -1,5 +1,5 @@
 ﻿using FluentResults;
-using Savr.Application.DTOs;
+using Savr.Application.Features.Identity;
 using Savr.Application.Features.Identity.Commands;
 using Savr.Application.Features.Identity.Commands.Login;
 using Savr.Application.Features.Identity.Commands.Register;

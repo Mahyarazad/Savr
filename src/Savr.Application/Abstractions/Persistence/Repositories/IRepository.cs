@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace Savr.Domain.Abstractions.Persistence.Repositories
+namespace Savr.Application.Abstractions.Persistence.Repositories
 {
     public interface IRepository<T> where T : class
     {

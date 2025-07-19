@@ -2,7 +2,6 @@
 using Savr.Application.Abstractions.Messaging;
 using Savr.Application.Features.Group.Queries;
 using Savr.Application.Features.Group;
-using Savr.Application.DTOs;
 using Savr.Application.Abstractions.Identity;
 
 namespace Savr.Application.Features.Identity.Queries

@@ -58,8 +58,8 @@ namespace Savr.Persistence.Configurtions
             builder.Property(p => p.PriceDropPercentage)
                 .HasPrecision(5, 2); // e.g. 25.32
 
-            builder.HasIndex(p => new { p.Description, p.Name }, "UniqueIndex_PDes_PName")
-                .IsUnique(true);
+            //builder.HasIndex(p => new { p.CreationDate, p.Name }, "UniqueIndex_PCreation_PName")
+            //    .IsUnique(true);
 
 
             builder.HasMany(p => p.Tags)

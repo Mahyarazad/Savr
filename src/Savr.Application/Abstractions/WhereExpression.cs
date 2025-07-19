@@ -1,7 +1,7 @@
 ﻿using Savr.Domain.Primitives;
 using System.Linq.Expressions;
 
-namespace Savr.Domain.Abstractions
+namespace Savr.Application.Abstractions
 {
     public class WhereExpression<T>
     {

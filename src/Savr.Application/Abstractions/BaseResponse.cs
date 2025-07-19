@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Savr.Domain.Abstractions
+namespace Savr.Application.Abstractions
 {
     public abstract class BaseResponse()
     {

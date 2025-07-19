@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Savr.Domain.Abstractions.Persistence.Data
+namespace Savr.Application.Abstractions.Persistence.Data
 {
     public interface IUnitOfWork
     {
