@@ -51,11 +51,11 @@ namespace Savr.Presentation.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("get-listing")]
+        [HttpPost("get-listing")]
         public async Task<IActionResult> GetProductList(
             [FromQuery, Required] int pageNumber,
             [FromQuery, Required] int pageSize,
-            [FromQuery] IEnumerable<SqlFilter> filters,
+            [FromBody] IEnumerable<SqlFilter> filters,
             CancellationToken cancellationToken)
         {
             var ipConfig = HttpContext.Connection.RemoteIpAddress;
