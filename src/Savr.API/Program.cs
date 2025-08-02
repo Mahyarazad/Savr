@@ -8,13 +8,20 @@ using Savr.Persistence.Data;
 using Savr.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using Serilog.Sinks.PostgreSQL;
-using Serilog.Core;
+using Savr.API;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails(configure =>
+{
+    configure.CustomizeProblemDetails = context =>
+    {
+        context.ProblemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
+    };
+});
 
 Log.Logger = new LoggerConfiguration()
     //.MinimumLevel.Debug()
@@ -133,14 +140,14 @@ app.UseCors();
 app.MapControllers();
 
 
-app.Use(async (context, next) =>
-{
+//app.Use(async (context, next) =>
+//{
 
-    await next(context);
+//    await next(context);
 
-    // Log response details
-    Log.Information($"Response: {context.Response.StatusCode}");
-});
+//    // Log response details
+//    Log.Information($"Response: {context.Response.StatusCode}");
+//});
 
 
 try
