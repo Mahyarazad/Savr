@@ -7,7 +7,7 @@ using Savr.Application.Features.Group.Queries;
 namespace Savr.Presentation.Controllers
 {
     [ApiController]
-    [Authorize(Roles = "Admin,Merchant")]
+    //[Authorize(Roles = "Admin,Merchant")]
     [Route("api/v1/group")]
     public class GroupController : ControllerBase
     {

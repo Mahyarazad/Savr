@@ -25,6 +25,17 @@ namespace Savr.API
                 _ => StatusCodes.Status500InternalServerError
             };
 
+            
+            Log.Error(exception,
+                "Unhandled exception occurred: {ExceptionType} - {Message} at {Path} [{Method}] TraceId: {TraceId}",
+                exception.GetType().Name,
+                exception.Message,
+                httpContext.Request.Path,
+                httpContext.Request.Method,
+                httpContext.TraceIdentifier
+            );
+
+
             return await _problemDetailsService.TryWriteAsync(
                new ProblemDetailsContext
                {

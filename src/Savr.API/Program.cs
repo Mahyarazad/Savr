@@ -136,7 +136,7 @@ app.UseSwaggerDocumentation();
 //    .AllowCredentials()); // required for cookies/session-based auth
 
 app.UseCors();
-
+app.UseExceptionHandler();
 app.MapControllers();
 
 
