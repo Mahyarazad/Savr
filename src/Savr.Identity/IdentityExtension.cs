@@ -79,6 +79,21 @@ namespace Savr.Identity
                    context.HandleResponse();
                    return Task.CompletedTask;
                };
+           })
+           .AddFacebook("Facebook", options =>
+           {
+               options.AppId = configuration["Authentication:Facebook:AppId"];
+               options.AppSecret = configuration["Authentication:Facebook:AppSecret"];
+               options.CallbackPath = "/signin-facebook";
+               options.SaveTokens = true;
+
+               options.Events.OnRemoteFailure = context =>
+               {
+                   var error = Uri.EscapeDataString(context.Failure?.Message ?? "Unknown");
+                   context.Response.Redirect($"/auth/login-failed?error={error}");
+                   context.HandleResponse();
+                   return Task.CompletedTask;
+               };
            });
 
             services.AddAuthorization();
