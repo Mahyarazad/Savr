@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using Microsoft.Extensions.FileProviders;
 
 namespace Savr.Identity
 {
@@ -95,6 +96,30 @@ namespace Savr.Identity
                    return Task.CompletedTask;
                };
            });
+           //.AddApple("Apple", options =>
+           //{
+           //    options.ClientId = configuration["Authentication:Apple:ClientId"];
+           //    options.KeyId = configuration["Authentication:Apple:KeyId"];
+           //    options.TeamId = configuration["Authentication:Apple:TeamId"];
+           //    options.CallbackPath = "/signin-apple";
+           //    options.SaveTokens = true;
+
+           //    options.Scope.Add("name");
+           //    options.Scope.Add("email");
+
+           //    // ✅ Load private key from file
+           //    var keyFilePath = configuration["Authentication:Apple:PrivateKeyPath"]; // e.g., "Keys/AuthKey_ABC123.p8"
+           //    var fileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
+           //    options.UsePrivateKey(keyId => fileProvider.GetFileInfo(keyFilePath));
+
+           //    options.Events.OnRemoteFailure = context =>
+           //    {
+           //        var error = Uri.EscapeDataString(context.Failure?.Message ?? "Unknown");
+           //        context.Response.Redirect($"/auth/apple-login-failed?error={error}");
+           //        context.HandleResponse();
+           //        return Task.CompletedTask;
+           //    };
+           //});
 
             services.AddAuthorization();
 
